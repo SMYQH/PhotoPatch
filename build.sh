@@ -34,7 +34,7 @@ $CC_X64 $CFLAGS -DSTANDALONE_EXE -mwindows -o "Photo Patch.exe" dup2patcher.c re
 
 echo "=================================================="
 echo "[+] 全部构建成功！"
-echo "  - Photo Patch.exe : 独立完整单文件 GUI 补丁与全量汉化程序 (v1.1.0)"
+echo "  - Photo Patch.exe : 独立完整单文件 GUI 补丁与全量汉化程序 (v1.1.2)"
 echo "  - dup2patcher.dll : 核心补丁动态库 (导出 load_patcher)"
 echo "=================================================="
 

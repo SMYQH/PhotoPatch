@@ -9,7 +9,7 @@
 #include "zh_models_data.h"
 
 /**
- * dup2patcher.c - v1.1.0 (Production Release)
+ * dup2patcher.c - v1.1.2 (Production Release)
  * 
  * Topaz Photo AI 生产级修补与汉化增强引擎
  * 包含：Win32 原生 GUI、进程冲突检测、安装路径自适应探测、特征码内存补丁、
@@ -203,23 +203,19 @@ static void CreateDirectoryRecursive(const char* path) {
 }
 
 /**
- * 确保定位到 Topaz Photo AI 安装根目录
+ * 确保定位到 Topaz Photo AI 安装根目录 (通过注册表与系统路径智能探测)
  */
 static bool EnsureTargetDirectory(void) {
-    // 1. 检查当前目录
-    if (GetFileAttributesA("network.dll") != INVALID_FILE_ATTRIBUTES) {
-        return true;
-    }
-
     char targetDir[MAX_PATH] = {0};
 
-    // 2. 检查注册表 HKLM\SOFTWARE\Topaz Labs LLC\Topaz Photo AI
+    // 1. 检查注册表 HKLM\SOFTWARE\Topaz Labs LLC\Topaz Photo AI (64位视图)
     HKEY hKey = NULL;
     if (RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\Topaz Labs LLC\\Topaz Photo AI", 0, KEY_READ | KEY_WOW64_64KEY, &hKey) == ERROR_SUCCESS) {
         DWORD dwType = REG_SZ;
         DWORD dwSize = sizeof(targetDir);
         if (RegQueryValueExA(hKey, "InstallDir", NULL, &dwType, (LPBYTE)targetDir, &dwSize) == ERROR_SUCCESS ||
-            RegQueryValueExA(hKey, "Path", NULL, &dwType, (LPBYTE)targetDir, &dwSize) == ERROR_SUCCESS) {
+            RegQueryValueExA(hKey, "Path", NULL, &dwType, (LPBYTE)targetDir, &dwSize) == ERROR_SUCCESS ||
+            RegQueryValueExA(hKey, "InstallLocation", NULL, &dwType, (LPBYTE)targetDir, &dwSize) == ERROR_SUCCESS) {
             RegCloseKey(hKey);
             char netPath[MAX_PATH];
             snprintf(netPath, sizeof(netPath), "%s\\network.dll", targetDir);
@@ -235,7 +231,7 @@ static bool EnsureTargetDirectory(void) {
         }
     }
 
-    // 3. 检查默认标准安装路径 Program Files
+    // 2. 检查默认标准安装路径 Program Files
     char progFiles[MAX_PATH] = {0};
     if (GetEnvironmentVariableA("ProgramFiles", progFiles, sizeof(progFiles)) > 0) {
         snprintf(targetDir, sizeof(targetDir), "%s\\Topaz Labs LLC\\Topaz Photo AI", progFiles);
@@ -244,7 +240,7 @@ static bool EnsureTargetDirectory(void) {
         if (GetFileAttributesA(netPath) != INVALID_FILE_ATTRIBUTES) {
             SetCurrentDirectoryA(targetDir);
             char msg[512];
-            snprintf(msg, sizeof(msg), "[+] 自动切换至默认安装目录: %s", targetDir);
+            snprintf(msg, sizeof(msg), "[+] 自动定位到安装目录: %s", targetDir);
             AddMsg(msg);
             return true;
         }
@@ -375,7 +371,7 @@ static int PatchBinaryFile(const char* filename, const PatchRule* rules, size_t 
 }
 
 /**
- * 定位 ProgramData models 路径
+ * 定位 ProgramData models 路径 (通过系统环境变量与绝对路径智能探测)
  */
 static bool GetModelsDirectory(char* outPath, size_t maxLen) {
     char programData[MAX_PATH] = {0};
@@ -387,12 +383,6 @@ static bool GetModelsDirectory(char* outPath, size_t maxLen) {
         if (GetFileAttributesA(outPath) != INVALID_FILE_ATTRIBUTES) {
             return true;
         }
-    }
-
-    // 尝试当前目录或相对路径
-    if (GetFileAttributesA("models") != INVALID_FILE_ATTRIBUTES) {
-        snprintf(outPath, maxLen, "models");
-        return true;
     }
     return false;
 }
@@ -480,7 +470,7 @@ static void DoRestore(void) {
     }
 
     if (!EnsureTargetDirectory()) {
-        AddMsg("[-] 无法在当前目录找到安装文件，且未探测到安装目录！");
+        AddMsg("[-] 未能自动探测到 Topaz Photo AI 安装目录！");
         return;
     }
 
@@ -523,8 +513,8 @@ static void DoPatch(void) {
     }
 
     if (!EnsureTargetDirectory()) {
-        AddMsg("[-] 无法在当前目录找到 network.dll，且未探测到安装目录！");
-        AddMsg("[*] 请将本程序置于 Topaz Photo AI 安装目录下运行。");
+        AddMsg("[-] 未能自动探测到 Topaz Photo AI 安装目录！");
+        AddMsg("[*] 请确认软件已正确安装到系统。");
         return;
     }
 
@@ -623,7 +613,7 @@ static LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         case IDC_BTN_ABOUT:
             MessageBoxA(
                 hWnd,
-                "Topaz Photo AI 增强与全量汉化工具 v1.1.0\n\n"
+                "Topaz Photo AI 增强与全量汉化工具 v1.1.2\n\n"
                 "核心功能：\n"
                 "1. 离线免登录全量授权通过 (永久生效)\n"
                 "2. 屏蔽新版本强制升级提示弹窗\n"
@@ -691,7 +681,7 @@ __declspec(dllexport) void load_patcher(void) {
     ShowWindow(g_hDlg, SW_SHOW);
     UpdateWindow(g_hDlg);
 
-    AddMsg("[*] 欢迎使用 Topaz Photo AI 增强与中文汉化工具 (v1.1.0)");
+    AddMsg("[*] 欢迎使用 Topaz Photo AI 增强与中文汉化工具 (v1.1.2)");
     AddMsg("[*] 点击【应用补丁与汉化】执行修补，或【还原原始备份】回退。");
 
     // 消息循环
