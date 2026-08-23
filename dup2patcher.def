@@ -1,0 +1,5 @@
+LIBRARY dup2patcher
+EXPORTS
+    load_patcher
+    SearchAndReplace
+    AddMsg
