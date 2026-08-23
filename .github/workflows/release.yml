@@ -50,10 +50,26 @@ jobs:
             checksums.txt
           retention-days: 30
 
+      - name: Extract Quickstart Guide from README
+        run: |
+          python3 -c '
+          import re
+          with open("README.md", "r", encoding="utf-8") as f:
+              content = f.read()
+          match = re.search(r"(## 🚀 快速上手\s*[\s\S]*?)(?=\n---\n|\n## |\Z)", content)
+          if match:
+              with open("release_notes.md", "w", encoding="utf-8") as out:
+                  out.write(match.group(1).strip() + "\n")
+          else:
+              with open("release_notes.md", "w", encoding="utf-8") as out:
+                  out.write("## 🚀 快速上手\n\n请查阅项目主页 README.md 获取使用指南。\n")
+          '
+
       - name: Publish GitHub Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
+          body_path: release_notes.md
           files: |
             Photo Patch.exe
             dup2patcher.dll
