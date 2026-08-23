@@ -1,7 +1,6 @@
 *.msi
 *.exe
 dup2patcher.dll
-__pycache__/
-*.pyc
+encrypt_tool
 *.bak
 *.o

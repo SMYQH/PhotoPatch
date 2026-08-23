@@ -47,7 +47,7 @@
 
 ```bash
 apt update
-apt install -y gcc-mingw-w64-x86-64 binutils-mingw-w64-x86-64 python3
+apt install -y gcc gcc-mingw-w64-x86-64 binutils-mingw-w64-x86-64
 ```
 
 ### 2. 执行一键构建
