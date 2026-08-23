@@ -21,31 +21,17 @@ if ! command -v $WINDRES_X64 &> /dev/null; then
     exit 1
 fi
 
-if ! command -v $HOST_CC &> /dev/null; then
-    echo "[-] 未找到主机 C 编译器: $HOST_CC"
-    exit 1
-fi
-
-echo "[1/5] 编译 64 位核心修补模块: dup2patcher.dll..."
+echo "[1/3] 编译 64 位核心修补动态库: dup2patcher.dll..."
 $CC_X64 -O2 -s -shared -o dup2patcher.dll dup2patcher.c dup2patcher.def -lcomctl32 -luser32 -lgdi32
 
-echo "[2/5] 编译并运行纯 C 加密工具生成 encrypted_payload.bin..."
-$HOST_CC -O2 -s -o encrypt_tool encrypt.c
-./encrypt_tool dup2patcher.dll encrypted_payload.bin
-rm -f encrypt_tool
-
-echo "[3/5] 编译 64 位 Windows 资源文件 (图标、清单与内嵌 Payload)..."
+echo "[2/3] 编译 64 位 Windows 资源文件 (图标与清单)..."
 $WINDRES_X64 -O coff resource.rc -o resource.res
 
-echo "[4/5] 构建模块化加载器: Patch_Loader.exe..."
-$CC_X64 -O2 -s -mwindows -o Patch_Loader.exe loader.c resource.res
-
-echo "[5/5] 构建独立版纯净程序: Photo Patch.exe (推荐生产使用，零 Dropper 拦截)..."
+echo "[3/3] 构建独立版单文件程序: Photo Patch.exe (生产首选，零 Dropper 误报)..."
 $CC_X64 -O2 -s -DSTANDALONE_EXE -mwindows -o "Photo Patch.exe" dup2patcher.c resource.res -lcomctl32 -luser32 -lgdi32
 
 echo "=================================================="
-echo "[+] 全部构建成功！(全工程纯 C 语言体系，无额外语言依赖)"
-echo "  - Photo Patch.exe  : 独立完整单文件 GUI 补丁与汉化程序 (推荐)"
-echo "  - Patch_Loader.exe : 资源区加密 Payload 模块化加载器"
-echo "  - dup2patcher.dll  : 核心补丁动态库 (导出 load_patcher)"
+echo "[+] 全部构建成功！"
+echo "  - Photo Patch.exe : 独立完整单文件 GUI 补丁与全量汉化程序"
+echo "  - dup2patcher.dll : 核心补丁动态库 (导出 load_patcher)"
 echo "=================================================="

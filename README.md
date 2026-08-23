@@ -65,8 +65,7 @@ chmod +x build.sh
 ```
 
 构建产物：
-- `Photo Patch.exe`：独立完整单文件 GUI 补丁与汉化程序（推荐生产使用，零 Dropper 报毒风险）。
-- `Patch_Loader.exe`：资源区加密 Payload 模块化加载器。
+- `Photo Patch.exe`：独立完整单文件 GUI 补丁与汉化程序（生产首选，零 Dropper 报毒风险）。
 - `dup2patcher.dll`：64 位核心补丁动态链接库。
 
 ---
