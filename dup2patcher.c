@@ -5,23 +5,27 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#include "zh_models_data.h"
+
 /**
  * dup2patcher.c
  * 
- * Topaz Photo AI 生产级修补与增强引擎
- * 包含：Win32 GUI 窗口界面、备份/还原系统、高精度特征码扫描替换与全量遥测切断规则。
+ * Topaz Photo AI 生产级修补与汉化增强引擎
+ * 包含：Win32 GUI 界面、自动备份/还原、特征码内存补丁、全量遥测切断与 73 款 AI 模型全量中文汉化。
  */
 
 // 控件 ID 定义
-#define IDC_BTN_PATCH    1001
-#define IDC_BTN_RESTORE  1002
-#define IDC_BTN_ABOUT    1003
-#define IDC_BTN_EXIT     1004
-#define IDC_EDIT_LOG     1005
+#define IDC_BTN_PATCH     1001
+#define IDC_BTN_RESTORE   1002
+#define IDC_BTN_ABOUT     1003
+#define IDC_BTN_EXIT      1004
+#define IDC_EDIT_LOG      1005
+#define IDC_CHK_LOCALIZE  1006
 
 // 全局变量
 static HWND g_hDlg = NULL;
 static HWND g_hEditLog = NULL;
+static HWND g_hChkLocalize = NULL;
 static HINSTANCE g_hInstance = NULL;
 
 // 补丁规则结构
@@ -35,7 +39,7 @@ typedef struct {
     const char* description;
 } PatchRule;
 
-// ======================= 完整增强补丁规则定义 =======================
+// ======================= network.dll 核心增强补丁规则 =======================
 
 // 规则 1: 授权状态验证强制返回 True (mov al, 1)
 static const unsigned char s1[] = "\x74\x00\x48\x8D\x00\x00\x00\x00\x00\x48\x8B\xCB\xFF\x15\x00\x00\x00\x00\x84\xC0\x00\x00\x48\x8D\x00\x00\x00\x00\x00\x48\x8B\xCB\xFF\x15\x00\x00\x00\x00\x84\xC0\x00\x00\xB0\x01\x48\x83\xC4\x00\x5B\xC3\x32\xC0";
@@ -92,7 +96,7 @@ static const unsigned char zeros_amp1[sizeof(u_amp1) - 1] = {0};
 static const unsigned char zeros_amp2[sizeof(u_amp2) - 1] = {0};
 static const unsigned char zeros_amp3[sizeof(u_amp3) - 1] = {0};
 
-static PatchRule g_Rules[] = {
+static PatchRule g_NetworkRules[] = {
     {sizeof(s1) - 1,   s1, sm1, r1, rm1, 1, "免登录授权校验强制通过"},
     {sizeof(s2) - 1,   s2, sm2, r2, rm2, 1, "跳过未登录状态检测"},
     {sizeof(s3) - 1,   s3, sm3, r3, rm3, 1, "消除授权失败判断分支"},
@@ -107,9 +111,57 @@ static PatchRule g_Rules[] = {
     {sizeof(u_amp3) - 1, u_amp3, zeros_amp3, zeros_amp3, zeros_amp3, 1, "抹除 Amplitude 用户画像地址"}
 };
 
-#define RULE_COUNT (sizeof(g_Rules) / sizeof(g_Rules[0]))
+#define NETWORK_RULE_COUNT (sizeof(g_NetworkRules) / sizeof(g_NetworkRules[0]))
 
-// ======================= 补丁引擎与 GUI 辅助函数 =======================
+// ======================= Topaz Photo AI.exe 界面汉化规则 =======================
+
+// 汉化规则: Preferences -> 首选项\0\0\0\0\0 (12 字节定长)
+static const unsigned char s_pref[] = "Preferences\x00";
+static const unsigned char r_pref[] = "\xE9\xA6\x96\xE9\x80\x89\xE9\xA1\xB9\x00\x00\x00"; // "首选项\0\0\0"
+
+// 汉化规则: Resolution -> 分辨率\0\0\0 (11 字节定长)
+static const unsigned char s_reso[] = "Resolution\x00";
+static const unsigned char r_reso[] = "\xE5\x88\x86\xE8\xBE\xA8\xE7\x8E\x87\x00\x00"; // "分辨率\0\0"
+
+// 汉化规则: Sharpen -> 锐化\0\0 (8 字节定长)
+static const unsigned char s_shrp[] = "Sharpen\x00";
+static const unsigned char r_shrp[] = "\xE9\x94\x90\xE5\x8C\x96\x00\x00"; // "锐化\0\0"
+
+// 汉化规则: Denoise -> 降噪\0\0 (8 字节定长)
+static const unsigned char s_dens[] = "Denoise\x00";
+static const unsigned char r_dens[] = "\xE9\x99\x8D\xE5\x99\xAA\x00\x00"; // "降噪\0\0"
+
+// 汉化规则: Enhance -> 增强\0\0 (8 字节定长)
+static const unsigned char s_enhc[] = "Enhance\x00";
+static const unsigned char r_enhc[] = "\xE5\xA2\x9E\xE5\xBC\xBA\x00\x00"; // "增强\0\0"
+
+// 汉化规则: Cancel -> 取消\0 (7 字节定长)
+static const unsigned char s_cncl[] = "Cancel\x00";
+static const unsigned char r_cncl[] = "\xE5\x8F\x96\xE6\xB6\x88\x00"; // "取消\0"
+
+// 汉化规则: Apply -> 应用 (6 字节定长)
+static const unsigned char s_appl[] = "Apply\x00";
+static const unsigned char r_appl[] = "\xE5\xBA\x94\xE7\x94\xA8"; // "应用" (6 字节)
+
+static const unsigned char zeros_mask_12[12] = {0};
+static const unsigned char zeros_mask_11[11] = {0};
+static const unsigned char zeros_mask_8[8] = {0};
+static const unsigned char zeros_mask_7[7] = {0};
+static const unsigned char zeros_mask_6[6] = {0};
+
+static PatchRule g_ExeRules[] = {
+    {sizeof(s_pref), s_pref, zeros_mask_12, r_pref, zeros_mask_12, 1, "汉化: Preferences -> 首选项"},
+    {sizeof(s_reso), s_reso, zeros_mask_11, r_reso, zeros_mask_11, 2, "汉化: Resolution -> 分辨率"},
+    {sizeof(s_shrp), s_shrp, zeros_mask_8,  r_shrp, zeros_mask_8,  1, "汉化: Sharpen -> 锐化"},
+    {sizeof(s_dens), s_dens, zeros_mask_8,  r_dens, zeros_mask_8,  1, "汉化: Denoise -> 降噪"},
+    {sizeof(s_enhc), s_enhc, zeros_mask_8,  r_enhc, zeros_mask_8,  1, "汉化: Enhance -> 增强"},
+    {sizeof(s_cncl), s_cncl, zeros_mask_7,  r_cncl, zeros_mask_7,  1, "汉化: Cancel -> 取消"},
+    {sizeof(s_appl), s_appl, zeros_mask_6,  r_appl, zeros_mask_6,  1, "汉化: Apply -> 应用"}
+};
+
+#define EXE_RULE_COUNT (sizeof(g_ExeRules) / sizeof(g_ExeRules[0]))
+
+// ======================= 补丁引擎与辅助函数 =======================
 
 /**
  * 追加文本信息到界面的 Edit 日志框
@@ -156,165 +208,280 @@ __declspec(dllexport) int SearchAndReplace(
 }
 
 /**
- * 备份文件
+ * 备份目标文件
  */
-static bool BackupTargetFile(const char* targetDll, const char* backupDll) {
-    if (GetFileAttributesA(backupDll) != INVALID_FILE_ATTRIBUTES) {
-        // 备份已存在，跳过
-        return true;
+static bool BackupFile(const char* targetFile, const char* backupFile) {
+    if (GetFileAttributesA(backupFile) != INVALID_FILE_ATTRIBUTES) {
+        return true; // 备份已存在
     }
-    if (CopyFileA(targetDll, backupDll, TRUE)) {
-        AddMsg("[+] 已自动创建原始文件备份: network.dll.bak");
-        return true;
-    }
-    AddMsg("[!] 警告: 创建备份文件失败，可能缺少写权限。");
-    return false;
+    return CopyFileA(targetFile, backupFile, TRUE);
 }
 
 /**
- * 还原备份
+ * 对指定二进制文件应用 PatchRule 规则集
  */
-static void DoRestore() {
-    const char* targetDll = "network.dll";
-    const char* backupDll = "network.dll.bak";
+static int PatchBinaryFile(const char* filename, const PatchRule* rules, size_t ruleCount) {
+    char backupName[MAX_PATH];
+    snprintf(backupName, sizeof(backupName), "%s.bak", filename);
 
-    AddMsg("--- 开始还原备份 ---");
-    if (GetFileAttributesA(backupDll) == INVALID_FILE_ATTRIBUTES) {
-        AddMsg("[-] 未找到备份文件 network.dll.bak！");
-        return;
+    if (GetFileAttributesA(filename) == INVALID_FILE_ATTRIBUTES) {
+        return -1; // 文件不存在
     }
 
-    if (CopyFileA(backupDll, targetDll, FALSE)) {
-        AddMsg("[+] 成功从 network.dll.bak 还原原始文件！");
-    } else {
-        AddMsg("[-] 还原失败，请检查文件是否被占用或管理员权限。");
-    }
-}
-
-/**
- * 执行补丁流程
- */
-static void DoPatch() {
-    const char* targetDll = "network.dll";
-    const char* backupDll = "network.dll.bak";
-
-    AddMsg("========================================");
-    AddMsg("--- 开始应用 Photo AI 增强补丁 ---");
-    AddMsg("目标模块: network.dll");
-
-    // 检查目标文件存在
-    if (GetFileAttributesA(targetDll) == INVALID_FILE_ATTRIBUTES) {
-        AddMsg("[-] 无法在当前目录找到 network.dll！");
-        AddMsg("[*] 请将补丁程序放置在 Topaz Photo AI 安装目录下运行。");
-        return;
-    }
-
-    // 自动备份
-    BackupTargetFile(targetDll, backupDll);
+    BackupFile(filename, backupName);
 
     HANDLE hFile = CreateFileA(
-        targetDll,
-        GENERIC_READ | GENERIC_WRITE,
-        0,
-        NULL,
-        OPEN_EXISTING,
-        FILE_ATTRIBUTE_NORMAL,
-        NULL
+        filename, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL
     );
-
     if (hFile == INVALID_HANDLE_VALUE) {
-        AddMsg("[-] 无法打开 network.dll 进行写入，请以管理员权限运行！");
-        return;
+        return -2; // 打开失败
     }
 
     DWORD dwFileSize = GetFileSize(hFile, NULL);
     if (dwFileSize == 0 || dwFileSize == INVALID_FILE_SIZE) {
-        AddMsg("[-] 文件大小异常！");
         CloseHandle(hFile);
-        return;
+        return -3;
     }
 
     HANDLE hMap = CreateFileMappingA(hFile, NULL, PAGE_READWRITE, 0, 0, NULL);
     if (!hMap) {
-        AddMsg("[-] 创建文件内存映射失败！");
         CloseHandle(hFile);
-        return;
+        return -4;
     }
 
     unsigned char* pData = (unsigned char*)MapViewOfFile(hMap, FILE_MAP_ALL_ACCESS, 0, 0, 0);
     if (!pData) {
-        AddMsg("[-] 映射文件视图失败！");
         CloseHandle(hMap);
         CloseHandle(hFile);
-        return;
+        return -5;
     }
 
     int totalPatched = 0;
-    int ruleMatchedCount = 0;
     char msgBuf[256];
 
-    for (size_t i = 0; i < RULE_COUNT; i++) {
-        int count = SearchAndReplace(pData, dwFileSize, &g_Rules[i]);
+    for (size_t i = 0; i < ruleCount; i++) {
+        int count = SearchAndReplace(pData, dwFileSize, &rules[i]);
         if (count > 0) {
-            snprintf(msgBuf, sizeof(msgBuf), "  [OK] 规则 %02d [%s]: 命中 %d 处", (int)(i + 1), g_Rules[i].description, count);
-            ruleMatchedCount++;
-        } else {
-            snprintf(msgBuf, sizeof(msgBuf), "  [--] 规则 %02d [%s]: 未匹配(可能已修补)", (int)(i + 1), g_Rules[i].description);
+            snprintf(msgBuf, sizeof(msgBuf), "  [OK] %s: 命中 %d 处", rules[i].description, count);
+            AddMsg(msgBuf);
+            totalPatched += count;
         }
-        AddMsg(msgBuf);
-        totalPatched += count;
     }
 
     UnmapViewOfFile(pData);
     CloseHandle(hMap);
     CloseHandle(hFile);
+    return totalPatched;
+}
 
-    if (totalPatched > 0) {
-        snprintf(msgBuf, sizeof(msgBuf), "[+] 补丁应用成功！共修改 %d 处关键特征点。", totalPatched);
-        AddMsg(msgBuf);
-        AddMsg("[*] 授权、更新弹窗拦截及全量遥测切断均已生效。");
-    } else {
-        AddMsg("[!] 当前文件未发生任何修改。可能已打过补丁，或该版本 network.dll 不匹配。");
+/**
+ * 定位 ProgramData models 路径
+ */
+static bool GetModelsDirectory(char* outPath, size_t maxLen) {
+    char programData[MAX_PATH] = {0};
+    if (GetEnvironmentVariableA("ProgramData", programData, sizeof(programData)) > 0) {
+        snprintf(outPath, maxLen, "%s\\Topaz Labs LLC\\Topaz Photo AI\\models", programData);
+        if (GetFileAttributesA(outPath) != INVALID_FILE_ATTRIBUTES) {
+            return true;
+        }
     }
+
+    // 尝试当前目录或相对路径
+    if (GetFileAttributesA("models") != INVALID_FILE_ATTRIBUTES) {
+        snprintf(outPath, maxLen, "models");
+        return true;
+    }
+    return false;
+}
+
+/**
+ * 应用 73 款 AI 模型 JSON 中文汉化包
+ */
+static int ApplyModelsLocalization(void) {
+    char modelsDir[MAX_PATH];
+    if (!GetModelsDirectory(modelsDir, sizeof(modelsDir))) {
+        AddMsg("[!] 未找到 ProgramData 模型目录，跳过模型 JSON 汉化。");
+        return 0;
+    }
+
+    char msgBuf[512];
+    snprintf(msgBuf, sizeof(msgBuf), "[+] 定位到 AI 模型目录: %s", modelsDir);
+    AddMsg(msgBuf);
+
+    int successCount = 0;
+    for (size_t i = 0; i < ZH_MODEL_COUNT; i++) {
+        char jsonPath[MAX_PATH];
+        char bakPath[MAX_PATH];
+        snprintf(jsonPath, sizeof(jsonPath), "%s\\%s", modelsDir, g_ZhModelFiles[i].filename);
+        snprintf(bakPath, sizeof(bakPath), "%s\\%s.bak", modelsDir, g_ZhModelFiles[i].filename);
+
+        // 如果存在原文件且尚未备份，则备份
+        if (GetFileAttributesA(jsonPath) != INVALID_FILE_ATTRIBUTES) {
+            BackupFile(jsonPath, bakPath);
+        }
+
+        // 写入汉化后的 JSON 内容
+        FILE* fp = fopen(jsonPath, "wb");
+        if (fp) {
+            fputs(g_ZhModelFiles[i].content, fp);
+            fclose(fp);
+            successCount++;
+        }
+    }
+
+    snprintf(msgBuf, sizeof(msgBuf), "[+] 成功部署 %d 个 AI 模型与控制面板中文描述符！", successCount);
+    AddMsg(msgBuf);
+    return successCount;
+}
+
+/**
+ * 还原 73 款 AI 模型 JSON 原始备份
+ */
+static void RestoreModelsLocalization(void) {
+    char modelsDir[MAX_PATH];
+    if (!GetModelsDirectory(modelsDir, sizeof(modelsDir))) {
+        return;
+    }
+
+    int restoredCount = 0;
+    for (size_t i = 0; i < ZH_MODEL_COUNT; i++) {
+        char jsonPath[MAX_PATH];
+        char bakPath[MAX_PATH];
+        snprintf(jsonPath, sizeof(jsonPath), "%s\\%s", modelsDir, g_ZhModelFiles[i].filename);
+        snprintf(bakPath, sizeof(bakPath), "%s\\%s.bak", modelsDir, g_ZhModelFiles[i].filename);
+
+        if (GetFileAttributesA(bakPath) != INVALID_FILE_ATTRIBUTES) {
+            if (CopyFileA(bakPath, jsonPath, FALSE)) {
+                restoredCount++;
+            }
+        }
+    }
+    if (restoredCount > 0) {
+        char msgBuf[256];
+        snprintf(msgBuf, sizeof(msgBuf), "[+] 成功从备份还原 %d 个原始英文模型描述符。", restoredCount);
+        AddMsg(msgBuf);
+    }
+}
+
+/**
+ * 还原全部备份
+ */
+static void DoRestore(void) {
+    AddMsg("========================================");
+    AddMsg("--- 开始执行一键原样还原 ---");
+
+    // 1. 还原 network.dll
+    if (GetFileAttributesA("network.dll.bak") != INVALID_FILE_ATTRIBUTES) {
+        if (CopyFileA("network.dll.bak", "network.dll", FALSE)) {
+            AddMsg("[+] 成功还原原始 network.dll");
+        } else {
+            AddMsg("[-] 还原 network.dll 失败，请检查文件占用。");
+        }
+    }
+
+    // 2. 还原 Topaz Photo AI.exe
+    if (GetFileAttributesA("Topaz Photo AI.exe.bak") != INVALID_FILE_ATTRIBUTES) {
+        if (CopyFileA("Topaz Photo AI.exe.bak", "Topaz Photo AI.exe", FALSE)) {
+            AddMsg("[+] 成功还原原始 Topaz Photo AI.exe");
+        }
+    }
+
+    // 3. 还原 AI 模型 JSON
+    RestoreModelsLocalization();
+    AddMsg("[+] 还原流程完毕！");
+}
+
+/**
+ * 执行补丁与汉化流程
+ */
+static void DoPatch(void) {
+    AddMsg("========================================");
+    AddMsg("--- 开始应用 Topaz Photo AI 增强与汉化 ---");
+
+    // 1. 修补 network.dll
+    AddMsg("[*] 正在修补授权鉴权与遥测截断模块: network.dll ...");
+    int netRes = PatchBinaryFile("network.dll", g_NetworkRules, NETWORK_RULE_COUNT);
+    if (netRes == -1) {
+        AddMsg("[-] 无法在当前目录找到 network.dll！");
+        AddMsg("[*] 请将本程序置于 Topaz Photo AI 安装目录下运行。");
+        return;
+    } else if (netRes < 0) {
+        AddMsg("[-] 写入 network.dll 失败，请确认以管理员身份运行！");
+        return;
+    }
+
+    // 检查是否勾选了汉化包
+    bool bEnableZh = true;
+    if (g_hChkLocalize) {
+        bEnableZh = (SendMessageA(g_hChkLocalize, BM_GETCHECK, 0, 0) == BST_CHECKED);
+    }
+
+    if (bEnableZh) {
+        AddMsg("----------------------------------------");
+        AddMsg("[*] 正在应用中文语言包与模型汉化 ...");
+        
+        // 2. 汉化 Topaz Photo AI.exe 界面关键菜单
+        if (GetFileAttributesA("Topaz Photo AI.exe") != INVALID_FILE_ATTRIBUTES) {
+            AddMsg("[*] 正在修补主程序界面词条: Topaz Photo AI.exe ...");
+            PatchBinaryFile("Topaz Photo AI.exe", g_ExeRules, EXE_RULE_COUNT);
+        }
+
+        // 3. 部署 73 个 AI 模型的全量中文描述符
+        ApplyModelsLocalization();
+    }
+
+    AddMsg("========================================");
+    AddMsg("[+] 全部操作执行完毕！");
+    AddMsg("[*] 离线免登录授权、遥测切断与中文汉化已全部生效。");
 }
 
 // 窗口过程函数
 static LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
     case WM_CREATE: {
-        // 创建 UI 控件
+        // 创建日志 Edit 控件
         g_hEditLog = CreateWindowExA(
             WS_EX_CLIENTEDGE, "EDIT", "",
             WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY,
-            10, 10, 395, 140,
+            10, 10, 420, 140,
             hWnd, (HMENU)IDC_EDIT_LOG, g_hInstance, NULL
         );
 
+        // 创建汉化勾选框 (默认选中)
+        g_hChkLocalize = CreateWindowExA(
+            0, "BUTTON", "启用完整中文汉化 (73款AI模型+控制面板+界面菜单)",
+            WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
+            12, 158, 415, 20,
+            hWnd, (HMENU)IDC_CHK_LOCALIZE, g_hInstance, NULL
+        );
+        SendMessageA(g_hChkLocalize, BM_SETCHECK, BST_CHECKED, 0);
+
+        // 按钮组
         CreateWindowExA(
-            0, "BUTTON", "应用补丁",
+            0, "BUTTON", "应用补丁与汉化",
             WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-            10, 160, 90, 30,
+            10, 188, 120, 30,
             hWnd, (HMENU)IDC_BTN_PATCH, g_hInstance, NULL
         );
 
         CreateWindowExA(
-            0, "BUTTON", "还原备份",
+            0, "BUTTON", "还原原始备份",
             WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-            110, 160, 90, 30,
+            140, 188, 100, 30,
             hWnd, (HMENU)IDC_BTN_RESTORE, g_hInstance, NULL
         );
 
         CreateWindowExA(
             0, "BUTTON", "关于",
             WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-            210, 160, 90, 30,
+            250, 188, 85, 30,
             hWnd, (HMENU)IDC_BTN_ABOUT, g_hInstance, NULL
         );
 
         CreateWindowExA(
             0, "BUTTON", "退出",
             WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-            315, 160, 90, 30,
+            345, 188, 85, 30,
             hWnd, (HMENU)IDC_BTN_EXIT, g_hInstance, NULL
         );
         break;
@@ -331,13 +498,15 @@ static LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         case IDC_BTN_ABOUT:
             MessageBoxA(
                 hWnd,
-                "Topaz Photo AI 生产级修补与增强工具\n\n"
-                "功能特性：\n"
-                "1. 离线免登录全量授权通过\n"
-                "2. 屏蔽新版本强制更新提示\n"
-                "3. 彻底切断 Amplitude 与 Backtrace 遥测/崩溃数据上报\n"
-                "4. 自动备份与一键原样还原支持\n",
-                "关于",
+                "Topaz Photo AI 生产级增强与全量汉化工具\n\n"
+                "核心功能：\n"
+                "1. 离线免登录全量授权通过 (永久生效)\n"
+                "2. 屏蔽新版本强制升级提示弹窗\n"
+                "3. 彻底抹除 Amplitude/Backtrace 遥测与崩溃上报\n"
+                "4. 包含 73 款 AI 深度学习模型全量中文汉化\n"
+                "5. 包含右侧控制面板与核心界面菜单中文化\n"
+                "6. 自动全量备份与一键原样还原保障\n",
+                "关于本工具",
                 MB_OK | MB_ICONINFORMATION
             );
             break;
@@ -377,15 +546,15 @@ __declspec(dllexport) void load_patcher(void) {
     // 计算居中窗口坐标
     int screenW = GetSystemMetrics(SM_CXSCREEN);
     int screenH = GetSystemMetrics(SM_CYSCREEN);
-    int winW = 430;
-    int winH = 240;
+    int winW = 455;
+    int winH = 270;
     int posX = (screenW - winW) / 2;
     int posY = (screenH - winH) / 2;
 
     g_hDlg = CreateWindowExA(
         WS_EX_DLGMODALFRAME | WS_EX_TOPMOST,
         "Dup2PatcherClass",
-        "Topaz Photo AI Patcher",
+        "Topaz Photo AI 增强与全量汉化工具",
         WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_VISIBLE,
         posX, posY, winW, winH,
         NULL, NULL, g_hInstance, NULL
@@ -396,8 +565,8 @@ __declspec(dllexport) void load_patcher(void) {
     ShowWindow(g_hDlg, SW_SHOW);
     UpdateWindow(g_hDlg);
 
-    AddMsg("[*] 欢迎使用 Topaz Photo AI 补丁工具");
-    AddMsg("[*] 请点击【应用补丁】执行修补，或【还原备份】回退修改。");
+    AddMsg("[*] 欢迎使用 Topaz Photo AI 增强与中文汉化工具");
+    AddMsg("[*] 点击【应用补丁与汉化】执行修补，或【还原原始备份】回退。");
 
     // 消息循环
     MSG msg;

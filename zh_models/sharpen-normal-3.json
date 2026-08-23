@@ -1,0 +1,201 @@
+{
+  "jsonVersion": "1.0.0",
+  "version": "3",
+  "minAppVersion": "0",
+  "shortName": "slsp",
+  "name": "Sharpen Standard",
+  "category": "锐化强度",
+  "verb": "正在执行细节锐化...",
+  "autoModel": "slsp_ap",
+  "enabled": 1,
+  "paramNames": [
+    "noise",
+    "lensblur",
+    "motionblur",
+    "compression"
+  ],
+  "zeroCenter": 3,
+  "gui": {
+    "parameters": {
+      "lensblur": {
+        "name": "镜头模糊修正量",
+        "guiType": "int",
+        "default": 0.5,
+        "guiMax": 100,
+        "guiMin": 0,
+        "description": "The amount of lens blur. Should be 0 if using motion blur.",
+        "precision": 1,
+        "modelMax": 1,
+        "modelMin": 0,
+        "modelType": "float"
+      },
+      "motionblur": {
+        "name": "运动模糊修正量",
+        "guiType": "int",
+        "default": 0,
+        "guiMax": 100,
+        "guiMin": 0,
+        "description": "The amount of motion blur. Should be 0 if using lens blur.",
+        "precision": 1,
+        "modelMax": 1,
+        "modelMin": 0,
+        "modelType": "float"
+      },
+      "noise": {
+        "name": "抑制噪点",
+        "guiType": "int",
+        "default": 0,
+        "guiMax": 100,
+        "guiMin": 0,
+        "description": "Supresses noise",
+        "precision": 1,
+        "modelMax": 1,
+        "modelMin": 0,
+        "modelType": "float"
+      },
+      "compression": {
+        "name": "消除色彩伪影",
+        "guiType": "int",
+        "default": 0,
+        "guiMax": 100,
+        "guiMin": 0,
+        "description": "Removed color artifacts",
+        "precision": 1,
+        "modelMax": 1,
+        "modelMin": 0,
+        "modelType": "float"
+      }
+    }
+  },
+  "inputs": {
+    "input0": "netinput",
+    "compression": "param3",
+    "lensblur": "param1",
+    "motionblur": "param2",
+    "noise": "param0"
+  },
+  "backends": {
+    "onnx": {
+      "model": "imn",
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-ox.tz2"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "model"
+          ]
+        }
+      }
+    },
+    "coreml": {
+      "model": "imn",
+      "parallel": 1,
+      "minMacVersion": 10.16,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-mlc.tz"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "Identity"
+          ]
+        }
+      }
+    },
+    "onnx16": {
+      "model": "imn",
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-ox.tz2"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "model"
+          ]
+        }
+      }
+    },
+    "openvino": {
+      "model": "imn",
+      "parallel": 1,
+      "inputs": {
+        "input0": "netInput",
+        "t_param": "param"
+      },
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-ov.tz2"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "StatefulPartitionedCall/model/model/tf.clip_by_value/clip_by_value"
+          ]
+        }
+      }
+    },
+    "openvino16": {
+      "model": "imn",
+      "parallel": 1,
+      "inputs": {
+        "input0": "netInput",
+        "t_param": "param"
+      },
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-ov.tz2"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "StatefulPartitionedCall/model/model/tf.clip_by_value/clip_by_value"
+          ]
+        }
+      }
+    },
+    "tensorrt": {
+      "model": "imn",
+      "parallel": 0,
+      "capabilities": [
+        705,
+        806,
+        809
+      ],
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-rt[C]-[R]-rt.tz2"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "model"
+          ]
+        }
+      }
+    }
+  }
+}

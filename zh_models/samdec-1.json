@@ -1,0 +1,118 @@
+{
+  "jsonVersion": "1.0.0",
+  "version": "1",
+  "minAppVersion": "0",
+  "shortName": "sam_decode",
+  "name": "SAM Decode",
+  "category": "RAW 原始数据处理",
+  "verb": "正在消除图像噪点...",
+  "autoModel": "slsp_ap",
+  "enabled": 1,
+  "preflight": 1,
+  "postflight": 0,
+  "keepColor": 0,
+  "clamp": [
+    -1,
+    1
+  ],
+  "inputs": {
+    "input0": "netInput",
+    "param1": "param_0",
+    "param2": "param_1"
+  },
+  "backends": {
+    "openvino16": {
+      "model": "imn",
+      "parallel": 0,
+      "scales": {
+        "1": {
+          "nets": [
+            "samdec-v[V]-fp16-1024x1024-ov.tz"
+          ],
+          "blocks": [
+            64,
+            256
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    },
+    "onnx16": {
+      "model": "imn",
+      "parallel": 0,
+      "scales": {
+        "1": {
+          "nets": [
+            "samdec-v[V]-fp16-1024x1024-ox.tz"
+          ],
+          "blocks": [
+            64,
+            256
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    },
+    "onnx": {
+      "model": "imn",
+      "parallel": 0,
+      "scales": {
+        "1": {
+          "nets": [
+            "samdec-v[V]-fp32-1024x1024-ox.tz"
+          ],
+          "blocks": [
+            64,
+            256
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    },
+    "coreml": {
+      "model": "imn",
+      "parallel": 0,
+      "scales": {
+        "1": {
+          "nets": [
+            "samdec-v[V]-fp32-1024x1024-rev1-mlc.tz"
+          ],
+          "blocks": [
+            64,
+            256
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    },
+    "tensorrt": {
+      "model": "imn",
+      "parallel": 0,
+      "capabilities": [
+        809
+      ],
+      "scales": {
+        "1": {
+          "nets": [
+            "samdec-v[V]-fp32-1024x1024-rt[C]-[R]-rt.tz2"
+          ],
+          "blocks": [
+            64,
+            256
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    }
+  }
+}

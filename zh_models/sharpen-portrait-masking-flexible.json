@@ -1,0 +1,67 @@
+{
+  "jsonVersion": "1.0.0",
+  "version": "2",
+  "minAppVersion": "0",
+  "shortName": "smp_flexible",
+  "name": "portrait",
+  "category": "自动参数计算",
+  "verb": "正在计算主体显著性遮罩...",
+  "display": 0,
+  "enabled": 1,
+  "usefulRegion": 1.0,
+  "padding": [
+    0,
+    0
+  ],
+  "zeroCenter": 3,
+  "gui": {
+    "minScale": 1,
+    "maxScale": 1,
+    "showScale": 0,
+    "name": "Sharpen Salient portrait Masking",
+    "displayPri": 1.0,
+    "desc": "Sharpen Salient portrait Masking Model"
+  },
+  "inputs": {
+    "input0": "netInput"
+  },
+  "backends": {
+    "openvino": {
+      "model": "imn",
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-ov.tz2"
+          ],
+          "blocks": [
+            320,
+            320
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    },
+    "coreml": {
+      "model": "imn",
+      "parallel": 0,
+      "minMacVersion": 10.16,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-mlc.tz"
+          ],
+          "blocks": [
+            320,
+            320
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    }
+  }
+}

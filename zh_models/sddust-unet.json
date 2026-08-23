@@ -1,0 +1,78 @@
+{
+  "jsonVersion": "1.0.0",
+  "version": "2",
+  "minCMLMacVersion": 10.16,
+  "minAppVersion": "0",
+  "shortName": "sddustunet",
+  "name": "SDDustUnet",
+  "category": "灰尘微粒消除",
+  "enabled": 1,
+  "padding": [
+    0,
+    0
+  ],
+  "blockOverlap": 32,
+  "blockDiscard": 0,
+  "inputs": {
+    "input0": "sample",
+    "input1": "encoder_hidden_states"
+  },
+  "backends": {
+    "coreml": {
+      "model": "imn",
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-mlc.tz",
+            "default_prompt.bin"
+          ],
+          "blocks": [
+            64,
+            64
+          ],
+          "outputs": [
+            "noise_pred"
+          ]
+        }
+      }
+    },
+    "onnx16": {
+      "model": "imn",
+      "parallel": 0,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-ox.tz",
+            "default_prompt.bin"
+          ],
+          "blocks": [
+            64,
+            64
+          ],
+          "outputs": [
+            "noise_pred"
+          ]
+        }
+      }
+    },
+    "openvino": {
+      "model": "imn",
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-ov.tz"
+          ],
+          "blocks": [
+            64,
+            64
+          ],
+          "outputs": [
+            "noise_pred"
+          ]
+        }
+      }
+    }
+  }
+}

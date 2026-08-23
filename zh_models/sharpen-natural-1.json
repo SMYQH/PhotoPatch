@@ -1,0 +1,154 @@
+{
+  "jsonVersion": "1.0.0",
+  "version": "1",
+  "minAppVersion": "0",
+  "shortName": "sll",
+  "name": "Sharpen Natural",
+  "category": "锐化强度",
+  "verb": "正在执行细节锐化...",
+  "autoModel": "slsp_ap",
+  "enabled": 1,
+  "inputs": {
+    "input": "netInput",
+    "param1": "t_param",
+    "param2": "t_param1",
+    "cinput": "infer_input",
+    "output": "infer_output"
+  },
+  "backends": {
+    "onnx": {
+      "model": "imcc",
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-ox.tz",
+            "clc-v3-fp32-[H]x[W]-ox.tz2"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "tl_unet/netOutput",
+            "Identity"
+          ]
+        }
+      }
+    },
+    "coreml": {
+      "model": "imcc",
+      "parallel": 1,
+      "minMacVersion": 10.16,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-mlc.tz",
+            "clc-v3-fp16-[H]x[W]-mlc.tz"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "tl_unet/netOutput",
+            "Identity"
+          ]
+        }
+      }
+    },
+    "onnx16": {
+      "model": "imcc",
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-ox.tz",
+            "clc-v3-fp16-[H]x[W]-ox.tz2"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "tl_unet/netOutput",
+            "Identity"
+          ]
+        }
+      }
+    },
+    "openvino": {
+      "model": "imcc",
+      "parallel": 1,
+      "inputs": {
+        "input0": "netInput",
+        "t_param": "param"
+      },
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-ov.tz",
+            "clc-v2-fp32-[H]x[W]-ov.tz2"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "tl_unet/netOutput",
+            "Identity"
+          ]
+        }
+      }
+    },
+    "openvino16": {
+      "model": "imcc",
+      "parallel": 1,
+      "inputs": {
+        "input0": "netInput",
+        "t_param": "param"
+      },
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-ov.tz",
+            "clc-v2-fp16-[H]x[W]-ov.tz2"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "tl_unet/netOutput",
+            "Identity"
+          ]
+        }
+      }
+    },
+    "tensorrt": {
+      "model": "imcc",
+      "parallel": 0,
+      "capabilities": [
+        705,
+        806,
+        809
+      ],
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-rt[C]-[R]-rt.tz2",
+            "clc-v3-fp32-[H]x[W]-rt[C]-[R]-rt.tz2"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "tl_unet/netOutput",
+            "Identity"
+          ]
+        }
+      }
+    }
+  }
+}

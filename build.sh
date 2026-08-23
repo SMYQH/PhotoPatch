@@ -37,15 +37,15 @@ rm -f encrypt_tool
 echo "[3/5] 编译 64 位 Windows 资源文件 (图标、清单与内嵌 Payload)..."
 $WINDRES_X64 -O coff resource.rc -o resource.res
 
-echo "[4/5] 构建模块化加载器: Use_Loader.exe..."
-$CC_X64 -O2 -s -mwindows -o Use_Loader.exe loader.c resource.res
+echo "[4/5] 构建模块化加载器: Patch_Loader.exe..."
+$CC_X64 -O2 -s -mwindows -o Patch_Loader.exe loader.c resource.res
 
 echo "[5/5] 构建独立版纯净程序: Photo Patch.exe (推荐生产使用，零 Dropper 拦截)..."
 $CC_X64 -O2 -s -DSTANDALONE_EXE -mwindows -o "Photo Patch.exe" dup2patcher.c resource.res -lcomctl32 -luser32 -lgdi32
 
 echo "=================================================="
 echo "[+] 全部构建成功！(全工程纯 C 语言体系，无额外语言依赖)"
-echo "  - Photo Patch.exe : 独立完整单文件 GUI 补丁程序 (推荐)"
-echo "  - Use_Loader.exe  : 资源区加密 Payload 模块化加载器"
-echo "  - dup2patcher.dll : 核心补丁动态库 (导出 load_patcher)"
+echo "  - Photo Patch.exe  : 独立完整单文件 GUI 补丁与汉化程序 (推荐)"
+echo "  - Patch_Loader.exe : 资源区加密 Payload 模块化加载器"
+echo "  - dup2patcher.dll  : 核心补丁动态库 (导出 load_patcher)"
 echo "=================================================="

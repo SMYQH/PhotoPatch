@@ -1,0 +1,98 @@
+{
+  "jsonVersion": "1.0.0",
+  "version": "1",
+  "minAppVersion": "0",
+  "shortName": "gendet",
+  "name": "GenreDetection",
+  "category": "文本与字符修复",
+  "verb": "正在检测主体与人脸...",
+  "enabled": 1,
+  "gui": {
+    "minScale": 1,
+    "maxScale": 1,
+    "showScale": 0,
+    "name": "Text Mask",
+    "displayPri": 1.3,
+    "desc": "基于 EfficientNet 的画面题材与类型智能识别"
+  },
+  "classes": [
+    "abstract",
+    "architecture",
+    "art",
+    "astro",
+    "bird",
+    "event",
+    "food",
+    "group",
+    "landscape",
+    "macro",
+    "pets",
+    "portrait",
+    "product",
+    "real_estate",
+    "sports",
+    "underwater",
+    "wedding",
+    "wildlife"
+  ],
+  "inputs": {
+    "input0": "image"
+  },
+  "backends": {
+    "onnx": {
+      "model": "imn",
+      "parallel": 0,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-1x-ox.tz"
+          ],
+          "blocks": [
+            256,
+            256
+          ],
+          "outputs": [
+            "logits"
+          ]
+        }
+      }
+    },
+    "openvino": {
+      "model": "imn",
+      "parallel": 0,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-1x-ov.tz"
+          ],
+          "blocks": [
+            256,
+            256
+          ],
+          "outputs": [
+            "logits"
+          ]
+        }
+      }
+    },
+    "coreml": {
+      "model": "imn",
+      "parallel": 0,
+      "minMacVersion": 10.14,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-1x-ml.tz"
+          ],
+          "blocks": [
+            256,
+            256
+          ],
+          "outputs": [
+            "logits"
+          ]
+        }
+      }
+    }
+  }
+}

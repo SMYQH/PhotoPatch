@@ -1,0 +1,65 @@
+{
+  "jsonVersion": "1.0.0",
+  "version": "1",
+  "minAppVersion": "0",
+  "shortName": "gfp-s",
+  "name": "Face Parse Small",
+  "category": "人脸高清修复",
+  "enabled": 1,
+  "display": 0,
+  "usefulRegion": 1.0,
+  "padding": [
+    0,
+    0
+  ],
+  "gui": {
+    "minScale": 1,
+    "maxScale": 1,
+    "showScale": 0,
+    "name": "远景微小面部五官解析",
+    "displayPri": 1.0,
+    "desc": "针对远景微小人脸的快速五官分割模型"
+  },
+  "inputs": {
+    "input0": "modelInput"
+  },
+  "backends": {
+    "openvino": {
+      "model": "imn",
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-ov.tz2"
+          ],
+          "blocks": [
+            1024,
+            1024
+          ],
+          "outputs": [
+            "modelOutput"
+          ]
+        }
+      }
+    },
+    "coreml": {
+      "model": "imn",
+      "parallel": 1,
+      "minMacVersion": 10.16,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-mlc.tz"
+          ],
+          "blocks": [
+            1024,
+            1024
+          ],
+          "outputs": [
+            "modelOutput"
+          ]
+        }
+      }
+    }
+  }
+}

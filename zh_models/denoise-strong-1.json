@@ -1,0 +1,185 @@
+{
+  "jsonVersion": "1.0.0",
+  "version": "1",
+  "minAppVersion": "0",
+  "shortName": "isob",
+  "name": "Severe Noise Beta",
+  "category": "AI 降噪",
+  "verb": "正在消除重度杂讯与噪点...",
+  "autoModel": "slsp_ap",
+  "index": 3,
+  "enabled": 1,
+  "preflight": 1,
+  "postflight": 0,
+  "keepColor": 0,
+  "zeroCenter": 3,
+  "gui": {
+    "minScale": 1,
+    "maxScale": 1,
+    "showScale": 0,
+    "name": "高感光度降噪 (ISO)",
+    "displayPri": 1.1,
+    "desc": "针对高 ISO 噪点与颗粒感的专业降噪模型",
+    "parameters": {
+      "param1": {
+        "name": "降噪强度",
+        "guiType": "int",
+        "default": 0.5,
+        "guiMax": 100,
+        "guiMin": 0,
+        "description": "Reduce blockiness and other compression artifacts. Higher values are better for low-bitrate input video.",
+        "precision": 1,
+        "modelMax": 1,
+        "modelMin": 0,
+        "modelType": "float"
+      },
+      "param2": {
+        "name": "锐化强度",
+        "guiType": "int",
+        "default": 0,
+        "guiMax": 100,
+        "guiMin": 0,
+        "description": "Additional sharpening of the video. Higher values produce a sharper video but may introduce artifacts. Adjust this after the \"Deblock\" setting.",
+        "precision": 1,
+        "modelMax": 1,
+        "modelMin": 0,
+        "modelType": "float"
+      }
+    }
+  },
+  "inputs": {
+    "param1_strongv2": "t_param",
+    "param2_strongv2": "t_param1",
+    "input": "netInput",
+    "cinput": "infer_input",
+    "output": "infer_output"
+  },
+  "backends": {
+    "openvino": {
+      "model": "imcc",
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-ov.tz2",
+            "clc-v2-fp32-[H]x[W]-ov.tz2"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "netOutput",
+            "Identity"
+          ]
+        }
+      }
+    },
+    "openvino16": {
+      "model": "imcc",
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-ov.tz2",
+            "clc-v2-fp16-[H]x[W]-ov.tz2"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "netOutput",
+            "Identity"
+          ]
+        }
+      }
+    },
+    "onnx": {
+      "model": "imcc",
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-ox.tz2",
+            "clc-v3-fp32-[H]x[W]-ox.tz2"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "netOutput",
+            "Identity"
+          ]
+        }
+      }
+    },
+    "onnx16": {
+      "model": "imcc",
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-ox.tz2",
+            "clc-v3-fp32-[H]x[W]-ox.tz2"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "netOutput",
+            "Identity"
+          ]
+        }
+      }
+    },
+    "coreml": {
+      "model": "imcc",
+      "parallel": 1,
+      "minMacVersion": 10.16,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-mlc.tz",
+            "clc-v3-fp16-[H]x[W]-mlc.tz"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "netOutput",
+            "Identity"
+          ]
+        }
+      }
+    },
+    "tensorrt": {
+      "model": "imcc",
+      "parallel": 0,
+      "capabilities": [
+        705,
+        806,
+        809
+      ],
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-rt[C]-[R]-rt.tz2",
+            "clc-v3-fp32-[H]x[W]-rt[C]-[R]-rt.tz2"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "netOutput",
+            "Identity"
+          ]
+        }
+      }
+    }
+  }
+}

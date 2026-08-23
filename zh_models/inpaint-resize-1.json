@@ -1,0 +1,61 @@
+{
+  "jsonVersion": "1.0.0",
+  "version": "1",
+  "minAppVersion": "0",
+  "shortName": "sdi_imdn",
+  "name": "Inpaint Resize",
+  "category": "智能消除与修补",
+  "verb": "正在消除并生成填补区域...",
+  "enabled": 1,
+  "gui": {
+    "minScale": 1,
+    "maxScale": 1,
+    "showScale": 0,
+    "name": "Inpaint Resize",
+    "displayPri": 1.3,
+    "desc": "Inpaint Resize model"
+  },
+  "inputs": {
+    "input0": "netInput"
+  },
+  "backends": {
+    "openvino": {
+      "model": "imn",
+      "parallel": 0,
+      "transpose": 0,
+      "scales": {
+        "2": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-[S]x-ov.tz2"
+          ],
+          "blocks": [
+            96,
+            96
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    },
+    "coreml": {
+      "model": "imn",
+      "parallel": -1,
+      "minMacVersion": 10.16,
+      "scales": {
+        "2": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-[S]x-mlc.tz"
+          ],
+          "blocks": [
+            96,
+            96
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "jsonVersion": "1.0.0",
+  "version": "1",
+  "minCMLMacVersion": 10.16,
+  "minAppVersion": "0",
+  "shortName": "claa",
+  "name": "Color Light General",
+  "category": "智能曝光调节",
+  "verb": "正在调节光影与曝光...",
+  "enabled": 1,
+  "padding": [
+    0,
+    0
+  ],
+  "blockOverlap": 0,
+  "blockDiscard": 0,
+  "inputs": {
+    "input0": "netInput"
+  },
+  "backends": {
+    "coreml": {
+      "model": "imn",
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-rev1-mlc.tz"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    },
+    "onnx": {
+      "model": "imn",
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-ox.tz"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    },
+    "openvino": {
+      "model": "imn",
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-ov.tz"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    }
+  }
+}

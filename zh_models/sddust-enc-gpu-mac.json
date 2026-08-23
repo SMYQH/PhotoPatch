@@ -1,0 +1,40 @@
+{
+  "jsonVersion": "1.0.0",
+  "version": "2",
+  "minCMLMacVersion": 10.16,
+  "minAppVersion": "0",
+  "shortName": "sddustenc-gpu-mac",
+  "name": "SDDustEncoder GPU Mac",
+  "category": "灰尘微粒消除",
+  "enabled": 1,
+  "zeroCenter": 1,
+  "padding": [
+    0,
+    0
+  ],
+  "blockOverlap": 64,
+  "blockDiscard": 8,
+  "inputs": {
+    "input": "x"
+  },
+  "backends": {
+    "coreml": {
+      "model": "imn",
+      "parallel": -2,
+      "scales": {
+        "0.125": {
+          "nets": [
+            "sddustenc-v[V]-fp16-[H]x[W]-mlc.tz"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "latent"
+          ]
+        }
+      }
+    }
+  }
+}

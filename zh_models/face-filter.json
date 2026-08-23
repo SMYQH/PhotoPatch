@@ -1,0 +1,65 @@
+{
+  "jsonVersion": "1.0.0",
+  "version": "1",
+  "minAppVersion": "0",
+  "shortName": "gfpf",
+  "name": "Face Parse Filtering",
+  "category": "人脸高清修复",
+  "enabled": 1,
+  "display": 0,
+  "usefulRegion": 1.0,
+  "padding": [
+    0,
+    0
+  ],
+  "convertBGR": 3,
+  "gui": {
+    "minScale": 1,
+    "maxScale": 1,
+    "showScale": 0,
+    "name": "面部五官解析过滤",
+    "displayPri": 1.0,
+    "desc": "过滤非人脸干扰并精确分离面部特征"
+  },
+  "inputs": {
+    "input0": "modelInput"
+  },
+  "backends": {
+    "openvino": {
+      "model": "imn",
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-ov.tz2"
+          ],
+          "blocks": [
+            48,
+            48
+          ],
+          "outputs": [
+            "modelOutput"
+          ]
+        }
+      }
+    },
+    "coreml": {
+      "model": "imn",
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-mlc.tz"
+          ],
+          "blocks": [
+            48,
+            48
+          ],
+          "outputs": [
+            "modelOutput"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "jsonVersion": "1.0.0",
+  "version": "1",
+  "minCMLMacVersion": 10.16,
+  "minAppVersion": "0",
+  "shortName": "iri",
+  "name": "Image Recovery Inpaint",
+  "category": "灰尘与划痕修复",
+  "enabled": 1,
+  "padding": [
+    0,
+    0
+  ],
+  "blockOverlap": 0,
+  "blockDiscard": 0,
+  "inputs": {
+    "input0": "netInput",
+    "input1": "netMask"
+  },
+  "backends": {
+    "coreml": {
+      "model": "imn",
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-mlc.tz"
+          ],
+          "blocks": [
+            800,
+            800
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    },
+    "onnx": {
+      "model": "imn",
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-ox.tz"
+          ],
+          "blocks": [
+            800,
+            800
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    },
+    "openvino": {
+      "model": "imn",
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-ov.tz"
+          ],
+          "blocks": [
+            800,
+            800
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    }
+  }
+}

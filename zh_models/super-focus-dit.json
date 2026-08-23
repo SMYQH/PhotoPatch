@@ -1,0 +1,95 @@
+{
+  "jsonVersion": "1.0.0",
+  "version": "1",
+  "minCMLMacVersion": 10.16,
+  "minAppVersion": "0",
+  "shortName": "spfcdit",
+  "name": "SuperFocusDit",
+  "category": "超焦清晰重构",
+  "enabled": 1,
+  "padding": [
+    0,
+    0
+  ],
+  "blockOverlap": 32,
+  "blockDiscard": 8,
+  "inputs": {
+    "input0": "latent",
+    "input1": "condition",
+    "timestep": "timestep"
+  },
+  "backends": {
+    "coreml": {
+      "model": "imn",
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-rev2-mlc.tz"
+          ],
+          "blocks": [
+            64,
+            64
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    },
+    "onnx16": {
+      "model": "imn",
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-ox.tz2"
+          ],
+          "blocks": [
+            64,
+            64
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    },
+    "onnx": {
+      "model": "imn",
+      "parallel": 0,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-ox.tz2"
+          ],
+          "blocks": [
+            64,
+            64
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    },
+    "openvino16": {
+      "model": "imn",
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-ov.tz"
+          ],
+          "blocks": [
+            64,
+            64
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    }
+  }
+}

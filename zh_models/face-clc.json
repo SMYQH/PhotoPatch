@@ -1,0 +1,66 @@
+{
+  "jsonVersion": "1.0.0",
+  "version": "1",
+  "minAppVersion": "0",
+  "shortName": "gfclc",
+  "name": "Face Color Correction",
+  "category": "人脸高清修复",
+  "enabled": 1,
+  "display": 0,
+  "usefulRegion": 1.0,
+  "padding": [
+    0,
+    0
+  ],
+  "zeroCenter": 3,
+  "gui": {
+    "minScale": 1,
+    "maxScale": 1,
+    "showScale": 0,
+    "name": "面部肤色校正",
+    "displayPri": 1.0,
+    "desc": "面部肤色统一与色偏校正模型"
+  },
+  "inputs": {
+    "input0": "netInput"
+  },
+  "backends": {
+    "openvino": {
+      "model": "imn",
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-ov-11.tz2"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    },
+    "coreml": {
+      "model": "imn",
+      "parallel": 1,
+      "minMacVersion": 10.16,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-mlc.tz"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    }
+  }
+}

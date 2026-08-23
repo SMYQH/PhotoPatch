@@ -1,0 +1,44 @@
+{
+  "jsonVersion": "1.0.0",
+  "version": "1",
+  "minCMLMacVersion": 10.16,
+  "minAppVersion": "0",
+  "shortName": "ssddec0_0-gpu-mac",
+  "name": "SingleStepSharpenDecLow GPU Mac",
+  "category": "超焦清晰重构",
+  "enabled": 1,
+  "zeroCenter": 2,
+  "padding": [
+    0,
+    0
+  ],
+  "blockOverlap": 24,
+  "blockDiscard": 6,
+  "inputs": {
+    "input": "z",
+    "cinput": "netRef",
+    "output": "netInput"
+  },
+  "backends": {
+    "coreml": {
+      "model": "imcc",
+      "parallel": -2,
+      "scales": {
+        "8": {
+          "nets": [
+            "ssddec0_0-v[V]-fp16-[H]x[W]-rev1-mlc.tz",
+            "ldclc-v1-fp16-[H]x[W]-rev1-mlc.tz"
+          ],
+          "blocks": [
+            64,
+            64
+          ],
+          "outputs": [
+            "image",
+            "netOutput"
+          ]
+        }
+      }
+    }
+  }
+}

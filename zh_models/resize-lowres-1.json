@@ -1,0 +1,299 @@
+{
+  "jsonVersion": "1.0.0",
+  "version": "1",
+  "minAppVersion": "0",
+  "shortName": "gmp",
+  "enabled": 1,
+  "keepColor": 0,
+  "name": "Low Resolution",
+  "category": "画质综合增强",
+  "verb": "正在执行画质增强...",
+  "autoModel": "ggn_ap",
+  "zeroCenter": 3,
+  "gui": {
+    "minScale": 1,
+    "maxScale": 4,
+    "showScale": 0,
+    "name": "低质压缩伪影修复超分",
+    "displayPri": 3.2,
+    "desc": "消除严重 JPEG 压缩块效应与失真的放大模型",
+    "parameters": {
+      "param1": {
+        "name": "降噪强度",
+        "guiType": "int",
+        "default": 0.5,
+        "guiMax": 100,
+        "guiMin": 0,
+        "description": "Reduce blockiness and other compression artifacts. Higher values are better for low-bitrate input video.",
+        "precision": 1,
+        "modelMax": 1,
+        "modelMin": 0,
+        "modelType": "float"
+      },
+      "param2": {
+        "name": "锐化强度",
+        "guiType": "int",
+        "default": 0.3,
+        "guiMax": 100,
+        "guiMin": 0,
+        "description": "Additional sharpening of the video. Higher values produce a sharper video but may introduce artifacts. Adjust this after the \"Deblock\" setting.",
+        "precision": 1,
+        "modelMax": 1,
+        "modelMin": 0,
+        "modelType": "float"
+      }
+    }
+  },
+  "inputs": {
+    "param1": "t_param",
+    "param2": "t_param1",
+    "input": "netInput",
+    "cinput": "infer_input",
+    "output": "infer_output"
+  },
+  "backends": {
+    "tensorflow": {
+      "model": "imcc",
+      "parallel": 1,
+      "scales": {
+        "2": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-tf.tz",
+            "gclc-v1-fp32-[H]x[W]-[S]x-tf.tf"
+          ],
+          "blocks": [
+            192,
+            192
+          ],
+          "outputs": [
+            "tl_unet1x2x4x/netOutput2X",
+            "Identity"
+          ]
+        },
+        "4": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-tf.tz",
+            "gclc-v1-fp32-[H]x[W]-[S]x-tf.tf"
+          ],
+          "blocks": [
+            192,
+            192
+          ],
+          "outputs": [
+            "tl_unet1x2x4x/netOutput4X",
+            "Identity"
+          ]
+        }
+      }
+    },
+    "openvino": {
+      "model": "imcc",
+      "parallel": 1,
+      "scales": {
+        "2": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-[S]x-ov.tz2",
+            "gclc-v1-fp32-[H]x[W]-[S]x-ov.tz2"
+          ],
+          "blocks": [
+            192,
+            192
+          ],
+          "outputs": [
+            "tl_unet1x2x4x/out2x/add_2",
+            "model/tf.clip_by_value/clip_by_value"
+          ]
+        },
+        "4": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-[S]x-ov.tz2",
+            "gclc-v1-fp32-[H]x[W]-[S]x-ov.tz2"
+          ],
+          "blocks": [
+            192,
+            192
+          ],
+          "outputs": [
+            "tl_unet1x2x4x/out4x/add_2",
+            "model/tf.clip_by_value/clip_by_value"
+          ]
+        }
+      }
+    },
+    "openvino16": {
+      "model": "imcc",
+      "parallel": 1,
+      "scales": {
+        "2": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-[S]x-ov.tz2",
+            "gclc-v1-fp16-[H]x[W]-[S]x-ov.tz2"
+          ],
+          "blocks": [
+            192,
+            192
+          ],
+          "outputs": [
+            "tl_unet1x2x4x/out2x/add_2",
+            "model/tf.clip_by_value/clip_by_value"
+          ]
+        },
+        "4": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-[S]x-ov.tz2",
+            "gclc-v1-fp16-[H]x[W]-[S]x-ov.tz2"
+          ],
+          "blocks": [
+            192,
+            192
+          ],
+          "outputs": [
+            "tl_unet1x2x4x/out4x/add_2",
+            "model/tf.clip_by_value/clip_by_value"
+          ]
+        }
+      }
+    },
+    "onnx": {
+      "model": "imcc",
+      "parallel": 1,
+      "scales": {
+        "2": {
+          "nets": [
+            "[N]-v2-fp32-[H]x[W]-[S]x-ox.tz2",
+            "gclc-v1-fp32-[H]x[W]-[S]x-ox.tz2"
+          ],
+          "blocks": [
+            192,
+            192
+          ],
+          "outputs": [
+            "netOutput2X",
+            "tf.clip_by_value"
+          ]
+        },
+        "4": {
+          "nets": [
+            "[N]-v2-fp32-[H]x[W]-[S]x-ox.tz2",
+            "gclc-v1-fp32-[H]x[W]-[S]x-ox.tz2"
+          ],
+          "blocks": [
+            192,
+            192
+          ],
+          "outputs": [
+            "netOutput4X",
+            "tf.clip_by_value"
+          ]
+        }
+      }
+    },
+    "onnx16": {
+      "model": "imcc",
+      "parallel": 1,
+      "scales": {
+        "2": {
+          "nets": [
+            "[N]-v2-fp16-[H]x[W]-[S]x-ox.tz2",
+            "gclc-v1-fp32-[H]x[W]-[S]x-ox.tz2"
+          ],
+          "blocks": [
+            192,
+            192
+          ],
+          "outputs": [
+            "netOutput2X",
+            "tf.clip_by_value"
+          ]
+        },
+        "4": {
+          "nets": [
+            "[N]-v2-fp16-[H]x[W]-[S]x-ox.tz2",
+            "gclc-v1-fp32-[H]x[W]-[S]x-ox.tz2"
+          ],
+          "blocks": [
+            192,
+            192
+          ],
+          "outputs": [
+            "netOutput4X",
+            "tf.clip_by_value"
+          ]
+        }
+      }
+    },
+    "coreml": {
+      "model": "imcc",
+      "parallel": 1,
+      "scales": {
+        "2": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-[S]x-mlc.tz",
+            "gclc-v1-fp16-[H]x[W]-[S]x-mlc.tz"
+          ],
+          "blocks": [
+            192,
+            192
+          ],
+          "outputs": [
+            "tl_unet1x2x4x/netOutput2X",
+            "Identity"
+          ]
+        },
+        "4": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-[S]x-mlc.tz",
+            "gclc-v1-fp16-[H]x[W]-[S]x-mlc.tz"
+          ],
+          "blocks": [
+            192,
+            192
+          ],
+          "outputs": [
+            "tl_unet1x2x4x/netOutput4X",
+            "Identity"
+          ]
+        }
+      }
+    },
+    "tensorrt": {
+      "model": "imcc",
+      "parallel": 0,
+      "capabilities": [
+        705,
+        806,
+        809
+      ],
+      "scales": {
+        "2": {
+          "nets": [
+            "[N]-v2-fp32-[H]x[W]-[S]x-rt[C]-[R]-rt.tz2",
+            "gclc-v1-fp32-[H]x[W]-[S]x-rt[C]-[R]-rt.tz2"
+          ],
+          "blocks": [
+            192,
+            192
+          ],
+          "outputs": [
+            "netOutput2X",
+            "tf.clip_by_value"
+          ]
+        },
+        "4": {
+          "nets": [
+            "[N]-v2-fp32-[H]x[W]-[S]x-rt[C]-[R]-rt.tz2",
+            "gclc-v1-fp32-[H]x[W]-[S]x-rt[C]-[R]-rt.tz2"
+          ],
+          "blocks": [
+            192,
+            192
+          ],
+          "outputs": [
+            "netOutput4X",
+            "tf.clip_by_value"
+          ]
+        }
+      }
+    }
+  }
+}

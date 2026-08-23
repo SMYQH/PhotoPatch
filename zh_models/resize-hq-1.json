@@ -1,0 +1,215 @@
+{
+  "jsonVersion": "1.0.0",
+  "version": "1",
+  "minAppVersion": "0",
+  "shortName": "ghq",
+  "blockOverlap": 12,
+  "blockDiscard": 2,
+  "enabled": 1,
+  "keepColor": 0,
+  "name": "High Fidelity",
+  "category": "画质综合增强",
+  "verb": "正在执行画质增强...",
+  "autoModel": "ggn_ap",
+  "gui": {
+    "minScale": 1,
+    "maxScale": 4,
+    "showScale": 0,
+    "name": "高保真极清超分 (High Fidelity)",
+    "displayPri": 3.0,
+    "desc": "最大限度保留原始纹理真实感的高保真超分模型",
+    "parameters": {
+      "scale": {
+        "default": 1
+      },
+      "param1": {
+        "name": "降噪强度",
+        "guiType": "int",
+        "default": 0,
+        "guiMax": 100,
+        "guiMin": 0,
+        "description": "Reduce blockiness and other compression artifacts. Higher values are better for low-bitrate input video.",
+        "precision": 1,
+        "modelMax": 1,
+        "modelMin": 0,
+        "modelType": "float"
+      },
+      "param2": {
+        "name": "锐化强度",
+        "guiType": "int",
+        "default": 0,
+        "guiMax": 100,
+        "guiMin": 0,
+        "description": "Additional sharpening of the video. Higher values produce a sharper video but may introduce artifacts. Adjust this after the \"Deblock\" setting.",
+        "precision": 1,
+        "modelMax": 1,
+        "modelMin": 0,
+        "modelType": "float"
+      },
+      "param3": {
+        "name": "消除压缩杂讯",
+        "guiType": "int",
+        "default": 0.3,
+        "guiMax": 100,
+        "guiMin": 0,
+        "description": "Reduce blockiness and other compression artifacts. Higher values are better for low-bitrate input video.",
+        "precision": 1,
+        "modelMax": 1,
+        "modelMin": 0,
+        "modelType": "float"
+      }
+    }
+  },
+  "inputs": {
+    "param1": "pn",
+    "param2": "pb",
+    "param3": "pc",
+    "input": "netInput",
+    "cinput": "infer_input",
+    "output": "infer_output"
+  },
+  "backends": {
+    "openvino": {
+      "model": "imcc",
+      "parallel": 1,
+      "scales": {
+        "2": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-[S]x-ov.tz2",
+            "gclc-v1-fp16-[H]x[W]-[S]x-ov.tz2"
+          ],
+          "blocks": [
+            96,
+            96
+          ],
+          "outputs": [
+            "netOutput",
+            "model/tf.clip_by_value/clip_by_value"
+          ]
+        },
+        "4": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-[S]x-ov.tz2",
+            "gclc-v1-fp16-[H]x[W]-[S]x-ov.tz2"
+          ],
+          "blocks": [
+            96,
+            96
+          ],
+          "outputs": [
+            "netOutput",
+            "model/tf.clip_by_value/clip_by_value"
+          ]
+        }
+      }
+    },
+    "onnx16": {
+      "model": "imcc",
+      "parallel": 1,
+      "scales": {
+        "2": {
+          "nets": [
+            "[N]-v[V]-fix-fp16-[H]x[W]-[S]x-ox.tz2",
+            "gclc-v1-fp32-[H]x[W]-[S]x-ox.tz2"
+          ],
+          "blocks": [
+            96,
+            96
+          ],
+          "outputs": [
+            "netOutput",
+            "tf.clip_by_value"
+          ]
+        },
+        "4": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-[S]x-ox.tz2",
+            "gclc-v1-fp32-[H]x[W]-[S]x-ox.tz2"
+          ],
+          "blocks": [
+            96,
+            96
+          ],
+          "outputs": [
+            "netOutput",
+            "tf.clip_by_value"
+          ]
+        }
+      }
+    },
+    "coreml": {
+      "model": "imcc",
+      "parallel": 1,
+      "minMacVersion": 10.16,
+      "scales": {
+        "2": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-[S]x-mlc.tz",
+            "gclc-v1-fp16-[H]x[W]-[S]x-mlc.tz"
+          ],
+          "blocks": [
+            96,
+            96
+          ],
+          "outputs": [
+            "netOutput",
+            "Identity"
+          ]
+        },
+        "4": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-[S]x-mlc.tz",
+            "gclc-v1-fp16-[H]x[W]-[S]x-mlc.tz"
+          ],
+          "blocks": [
+            96,
+            96
+          ],
+          "outputs": [
+            "netOutput",
+            "Identity"
+          ]
+        }
+      }
+    },
+    "tensorrt": {
+      "model": "imcc",
+      "parallel": 0,
+      "capabilities": [
+        705,
+        806,
+        809
+      ],
+      "scales": {
+        "2": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-[S]x-rt[C]-[R]-rt.tz2",
+            "gclc-v1-fp32-[H]x[W]-[S]x-rt[C]-[R]-rt.tz2"
+          ],
+          "blocks": [
+            96,
+            96
+          ],
+          "outputs": [
+            "netOutput",
+            "tf.clip_by_value"
+          ]
+        },
+        "4": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-[S]x-rt[C]-[R]-rt.tz2",
+            "gclc-v1-fp32-[H]x[W]-[S]x-rt[C]-[R]-rt.tz2"
+          ],
+          "blocks": [
+            96,
+            96
+          ],
+          "outputs": [
+            "netOutput",
+            "tf.clip_by_value"
+          ]
+        }
+      }
+    }
+  }
+}

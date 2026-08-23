@@ -1,0 +1,41 @@
+{
+  "jsonVersion": "1.0.0",
+  "version": "1",
+  "minCMLMacVersion": 10.16,
+  "minAppVersion": "0",
+  "shortName": "ssdunet-sharpen-gpu-mac",
+  "name": "SingelStepSharpenUnet GPU Mac",
+  "category": "锐化强度",
+  "enabled": 1,
+  "padding": [
+    0,
+    0
+  ],
+  "blockOverlap": 32,
+  "blockDiscard": 0,
+  "inputs": {
+    "input0": "sample",
+    "input1": "encoder_hidden_states"
+  },
+  "backends": {
+    "coreml": {
+      "model": "imn",
+      "parallel": -2,
+      "scales": {
+        "1": {
+          "nets": [
+            "ssdunet-sharpen-v[V]-fp16-[H]x[W]-rev1-mlc.tz",
+            "default_prompt.bin"
+          ],
+          "blocks": [
+            64,
+            64
+          ],
+          "outputs": [
+            "noise_pred"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "jsonVersion": "1.0.0",
+  "version": "1",
+  "minCMLMacVersion": 10.16,
+  "minAppVersion": "0",
+  "shortName": "ssdenc-sharpen",
+  "name": "SingleStepSharpenEnc",
+  "category": "锐化强度",
+  "enabled": 1,
+  "zeroCenter": 1,
+  "padding": [
+    0,
+    0
+  ],
+  "blockOverlap": 128,
+  "blockDiscard": 16,
+  "inputs": {
+    "input": "x"
+  },
+  "backends": {
+    "coreml": {
+      "model": "imn",
+      "parallel": 1,
+      "scales": {
+        "0.125": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-rev1-mlc.tz"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "latent"
+          ]
+        }
+      }
+    },
+    "onnx16": {
+      "model": "imn",
+      "parallel": 0,
+      "scales": {
+        "0.125": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-ox.tz"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "latent"
+          ]
+        }
+      }
+    },
+    "openvino16": {
+      "model": "imn",
+      "parallel": 0,
+      "scales": {
+        "0.125": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-ov.tz"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "latent"
+          ]
+        }
+      }
+    }
+  }
+}

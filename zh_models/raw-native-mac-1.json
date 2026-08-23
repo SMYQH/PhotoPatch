@@ -1,0 +1,121 @@
+{
+  "jsonVersion": "1.0.0",
+  "version": "1",
+  "minAppVersion": "0",
+  "shortName": "drw_native_mac",
+  "name": "RAW Native MacOS",
+  "category": "RAW 原始数据处理",
+  "verb": "正在消除图像噪点...",
+  "autoModel": "slsp_ap",
+  "enabled": 1,
+  "preflight": 1,
+  "postflight": 0,
+  "keepColor": 0,
+  "clamp": [
+    -1,
+    1
+  ],
+  "zeroCenter": 3,
+  "blockOverlap": 128,
+  "inputs": {
+    "param1_native": "t_param",
+    "param2_native": "t_param1",
+    "param3_native": "t_param2",
+    "input0": "netInput"
+  },
+  "backends": {
+    "openvino16": {
+      "model": "imn",
+      "parallel": 1,
+      "scales": {
+        "2": {
+          "nets": [
+            "drw_native-v[V]-fp16-[H]x[W]-ov.tz2"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    },
+    "onnx": {
+      "model": "imn",
+      "scales": {
+        "2": {
+          "nets": [
+            "drw_native-v[V]-fp32-[H]x[W]-ox.tz2"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    },
+    "onnx161": {
+      "model": "imn",
+      "scales": {
+        "2": {
+          "nets": [
+            "drw_native-v[V]-fp16-[H]x[W]-ox.tz2"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    },
+    "coreml": {
+      "model": "imn",
+      "scales": {
+        "2": {
+          "nets": [
+            "drw_native-v[V]-fp16-[H]x[W]-mlc.tz"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    },
+    "tensorrt": {
+      "model": "imn",
+      "parallel": 0,
+      "capabilities": [
+        601,
+        705,
+        806,
+        809
+      ],
+      "scales": {
+        "2": {
+          "nets": [
+            "drw_native-v[V]-fp32-[H]x[W]-rt[C]-8601-rt.tz2"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    }
+  }
+}

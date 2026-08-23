@@ -1,0 +1,104 @@
+{
+  "jsonVersion": "1.0.0",
+  "version": "1",
+  "minCMLMacVersion": 10.16,
+  "minAppVersion": "0",
+  "shortName": "spfcdec",
+  "name": "SuperFocusDec",
+  "category": "超焦清晰重构",
+  "enabled": 1,
+  "zeroCenter": 2,
+  "padding": [
+    0,
+    0
+  ],
+  "blockOverlap": 24,
+  "blockDiscard": 6,
+  "inputs": {
+    "input": "input_image",
+    "cinput": "netRef",
+    "output": "netInput"
+  },
+  "backends": {
+    "coreml": {
+      "model": "imcc",
+      "parallel": 1,
+      "scales": {
+        "8": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-rev1-mlc.tz",
+            "ldclc-v1-fp16-[H]x[W]-rev1-mlc.tz"
+          ],
+          "blocks": [
+            64,
+            64
+          ],
+          "outputs": [
+            "latent",
+            "netOutput"
+          ]
+        }
+      }
+    },
+    "onnx16": {
+      "model": "imcc",
+      "parallel": 0,
+      "scales": {
+        "8": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-ox.tz2",
+            "ldclc-v1-fp16-[H]x[W]-ox.tz"
+          ],
+          "blocks": [
+            64,
+            64
+          ],
+          "outputs": [
+            "latent",
+            "netOutput"
+          ]
+        }
+      }
+    },
+    "onnx": {
+      "model": "imcc",
+      "parallel": 0,
+      "scales": {
+        "8": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-ox.tz2",
+            "ldclc-v1-fp32-[H]x[W]-ox.tz2"
+          ],
+          "blocks": [
+            64,
+            64
+          ],
+          "outputs": [
+            "latent",
+            "netOutput"
+          ]
+        }
+      }
+    },
+    "openvino16": {
+      "model": "imcc",
+      "parallel": 1,
+      "scales": {
+        "8": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-ov.tz",
+            "ldclc-v1-fp16-[H]x[W]-ov.tz"
+          ],
+          "blocks": [
+            64,
+            64
+          ],
+          "outputs": [
+            "latent",
+            "netOutput"
+          ]
+        }
+      }
+    }
+  }
+}

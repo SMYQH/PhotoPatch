@@ -1,0 +1,79 @@
+{
+  "jsonVersion": "1.0.0",
+  "version": "1",
+  "minAppVersion": "0",
+  "shortName": "txtdtx",
+  "name": "Text Detectus",
+  "category": "文本与字符修复",
+  "verb": "正在生成边缘遮罩...",
+  "enabled": 1,
+  "gui": {
+    "minScale": 1,
+    "maxScale": 1,
+    "showScale": 0,
+    "name": "Text Mask",
+    "displayPri": 1.3,
+    "desc": "Masks detected text"
+  },
+  "inputs": {
+    "input0": "image"
+  },
+  "backends": {
+    "onnx": {
+      "model": "imn",
+      "parallel": 0,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-1x-ox.tz"
+          ],
+          "blocks": [
+            960,
+            640
+          ],
+          "outputs": [
+            "outputImage"
+          ]
+        }
+      }
+    },
+    "coreml": {
+      "model": "imn",
+      "parallel": -1,
+      "minMacVersion": 10.16,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-1x-mlc.tz"
+          ],
+          "blocks": [
+            960,
+            640
+          ],
+          "outputs": [
+            "outputImage"
+          ]
+        }
+      }
+    },
+    "openvino": {
+      "model": "imn",
+      "parallel": 0,
+      "transpose": 0,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-1x-ox.tz"
+          ],
+          "blocks": [
+            960,
+            640
+          ],
+          "outputs": [
+            "outputImage"
+          ]
+        }
+      }
+    }
+  }
+}

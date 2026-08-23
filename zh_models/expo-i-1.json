@@ -1,0 +1,108 @@
+{
+  "jsonVersion": "1.0.0",
+  "version": "1",
+  "minAppVersion": "0",
+  "shortName": "expoi",
+  "blockOverlap": 0,
+  "blockDiscard": 0,
+  "enabled": 1,
+  "name": "Exposure I",
+  "category": "智能曝光调节",
+  "verb": "正在调节光影与曝光...",
+  "gui": {
+    "minScale": 1,
+    "maxScale": 1,
+    "showScale": 0,
+    "name": "局部自适应曝光调节",
+    "displayPri": 1.0,
+    "desc": "局部阴影与高光自适应调节模型",
+    "parameters": {
+      "scale": {
+        "default": 1
+      }
+    }
+  },
+  "inputs": {
+    "input0": "netInput"
+  },
+  "backends": {
+    "openvino": {
+      "model": "imn",
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-[S]x-ov.tz2"
+          ],
+          "blocks": [
+            256,
+            256
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    },
+    "onnx": {
+      "model": "imn",
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-[S]x-ox.tz2"
+          ],
+          "blocks": [
+            256,
+            256
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    },
+    "coreml": {
+      "model": "imn",
+      "parallel": -1,
+      "minMacVersion": 11.0,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-[S]x-mlc.tz"
+          ],
+          "blocks": [
+            256,
+            256
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    },
+    "tensorrt": {
+      "model": "imn",
+      "parallel": 0,
+      "capabilities": [
+        705,
+        806,
+        809
+      ],
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-[S]x-rt[C]-[R]-rt.tz2"
+          ],
+          "blocks": [
+            256,
+            256
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    }
+  }
+}

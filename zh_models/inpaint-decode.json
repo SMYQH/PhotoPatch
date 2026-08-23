@@ -1,0 +1,79 @@
+{
+  "jsonVersion": "1.0.0",
+  "version": "2",
+  "minAppVersion": "0",
+  "shortName": "sdi_dec",
+  "name": "Standard Decode",
+  "category": "智能消除与修补",
+  "verb": "正在消除并生成填补区域...",
+  "enabled": 1,
+  "gui": {
+    "minScale": 1,
+    "maxScale": 1,
+    "showScale": 0,
+    "name": "Inpaint Standard",
+    "displayPri": 1.3,
+    "desc": "Inpaint Standard model"
+  },
+  "inputs": {
+    "input0": "latent_sample"
+  },
+  "backends": {
+    "openvino": {
+      "model": "imn",
+      "parallel": 0,
+      "transpose": 0,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-ov.tz2"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "sample"
+          ]
+        }
+      }
+    },
+    "onnx16": {
+      "model": "imn",
+      "parallel": 0,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-ox.tz2"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "sample"
+          ]
+        }
+      }
+    },
+    "coreml": {
+      "model": "imn",
+      "parallel": -1,
+      "minMacVersion": 10.16,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v3-fp16-[H]x[W]-rev1-mlc.tz"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "sample"
+          ]
+        }
+      }
+    }
+  }
+}

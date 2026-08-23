@@ -1,0 +1,98 @@
+{
+  "jsonVersion": "1.0.0",
+  "version": "1",
+  "minAppVersion": "0",
+  "shortName": "wbc",
+  "enabled": 1,
+  "keepColor": 0,
+  "name": "Standard",
+  "category": "白平衡与色温调节",
+  "verb": "正在校准色彩与白平衡...",
+  "inputs": {
+    "input0": "netInput"
+  },
+  "backends": {
+    "openvino": {
+      "model": "imn",
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "wbc-v[V]-fp16-[H]x[W]-ov.tz2",
+            "WhiteBalanceData-v2.bin"
+          ],
+          "blocks": [
+            128,
+            128
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    },
+    "onnx16": {
+      "model": "imn",
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "wbc-v[V]-fp16-[H]x[W]-ox.tz2",
+            "WhiteBalanceData-v2.bin"
+          ],
+          "blocks": [
+            128,
+            128
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    },
+    "coreml": {
+      "model": "imn",
+      "parallel": 1,
+      "minMacVersion": 11.0,
+      "scales": {
+        "1": {
+          "nets": [
+            "wbc-v[V]-fp16-[H]x[W]-mlc.tz",
+            "WhiteBalanceData-v2.bin"
+          ],
+          "blocks": [
+            128,
+            128
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    },
+    "tensorrt": {
+      "model": "imn",
+      "parallel": 0,
+      "capabilities": [
+        705,
+        806,
+        809
+      ],
+      "scales": {
+        "1": {
+          "nets": [
+            "wbc-v[V]-fp32-[H]x[W]-rt[C]-[R]-rt.tz2",
+            "WhiteBalanceData-v2.bin"
+          ],
+          "blocks": [
+            128,
+            128
+          ],
+          "outputs": [
+            "netOutput"
+          ]
+        }
+      }
+    }
+  }
+}

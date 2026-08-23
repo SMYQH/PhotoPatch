@@ -1,0 +1,65 @@
+{
+  "jsonVersion": "1.0.0",
+  "version": "1",
+  "minAppVersion": "0",
+  "shortName": "gfp-l",
+  "name": "Face Parse Large",
+  "category": "人脸高清修复",
+  "enabled": 1,
+  "display": 0,
+  "usefulRegion": 1.0,
+  "padding": [
+    0,
+    0
+  ],
+  "gui": {
+    "minScale": 1,
+    "maxScale": 1,
+    "showScale": 0,
+    "name": "大尺寸面部五官精细解析",
+    "displayPri": 1.0,
+    "desc": "针对特写大面部的高精五官分割模型"
+  },
+  "inputs": {
+    "input0": "modelInput"
+  },
+  "backends": {
+    "openvino": {
+      "model": "imn",
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-ov.tz2"
+          ],
+          "blocks": [
+            2048,
+            2048
+          ],
+          "outputs": [
+            "modelOutput"
+          ]
+        }
+      }
+    },
+    "coreml": {
+      "model": "imn",
+      "parallel": 1,
+      "minMacVersion": 10.16,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-mlc.tz"
+          ],
+          "blocks": [
+            2048,
+            2048
+          ],
+          "outputs": [
+            "modelOutput"
+          ]
+        }
+      }
+    }
+  }
+}

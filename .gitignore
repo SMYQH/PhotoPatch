@@ -1,6 +1,28 @@
+# ==================================================
+# Topaz Photo AI 补丁工程 Git 忽略规则
+# ==================================================
+
+# 巨型二进制安装包与临时提取物目录
 *.msi
+extracted_msi/
+
+# 编译生成的 Windows 可执行文件与动态库
 *.exe
 dup2patcher.dll
+
+# 临时编译工具与中间目标文件
 encrypt_tool
-*.bak
 *.o
+*.obj
+*.tmp
+*.zip
+
+# 自动生成的备份与容灾文件
+*.bak
+
+# 操作系统与 IDE 临时缓存
+.DS_Store
+Thumbs.db
+Desktop.ini
+.vscode/
+.idea/

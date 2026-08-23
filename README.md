@@ -1,4 +1,4 @@
-# Topaz Photo AI 修补与增强工程 (x64 Production-Ready)
+# Topaz Photo AI 修补、增强与全量汉化工程 (x64 Production-Ready)
 
 ## 🌟 核心特性
 
@@ -11,8 +11,14 @@
    - 彻底清空 Backtrace 崩溃诊断上报地址 (`events.backtrace.io`)。
    - 彻底清空 Amplitude 行为与画像追踪接口 (`api2.amplitude.com`, `api.lab.amplitude.com`, `profile-api.amplitude.com`)。
    - 清空旧版遥测域名 (`et.topazlabs.com`)。
-6. **自动备份与容灾恢复**：首次修补自动生成 `network.dll.bak`，支持 GUI 一键原样还原。
-7. **纯 64 位单文件架构**：原生 x86_64 编译，提供独立单文件程序（无需中间 Dropper 落地，零杀软误报）。
+6. **73 款 AI 模型与控制面板全量中文汉化**：
+   - 包含全部 73 款 AI 深度学习模型名称、算法描述、滑块控制项与状态动词全量翻译。
+   - 主程序核心菜单与状态条目中文化，打造原生中文摄影降噪/锐化工作流。
+7. **自动备份与容灾恢复**：
+   - 首次修补自动生成 `network.dll.bak`、`Topaz Photo AI.exe.bak` 与全部模型描述符 `*.json.bak`。
+   - 支持 GUI 界面一键原样还原。
+8. **纯 64 位单文件绿色架构**：
+   - 原生 x86_64 编译，独立单文件程序（无需外挂 JSON 或中间 Dropper 落地，零杀软误报）。
 
 ---
 
@@ -21,9 +27,10 @@
 1. 安装 **Photo.msi**，安装完成后彻底退出软件。
 2. 将构建生成的 `Photo Patch.exe` 复制到软件安装根目录下（默认路径为：`C:\Program Files\Topaz Labs LLC\Topaz Photo AI`）。
 3. 右键选择 **以管理员身份运行** `Photo Patch.exe`。
-4. 点击 **应用补丁** 按钮（程序会自动创建 `network.dll.bak` 备份并应用 12 组增强规则）。
-5. 看到日志提示修补成功后即可退出工具。
-6. 打开 Topaz Photo AI 即可正常离线使用。如需回退，可点击 **还原备份** 恢复原版文件。
+4. 勾选 **启用完整中文汉化**（默认已勾选）。
+5. 点击 **应用补丁与汉化** 按钮（程序会自动备份原始文件并应用 12 组增强规则与 73 款模型中文描述符）。
+6. 看到日志提示修补成功后即可退出工具。
+7. 打开 Topaz Photo AI 即可正常离线使用中文界面。如需回退，可点击 **还原原始备份** 恢复原版文件。
 
 ---
 
@@ -58,8 +65,8 @@ chmod +x build.sh
 ```
 
 构建产物：
-- `Photo Patch.exe`：独立完整单文件 GUI 补丁程序（推荐生产使用，无 Dropper 报毒风险）。
-- `Use_Loader.exe`：资源区加密 Payload 模块化加载器。
+- `Photo Patch.exe`：独立完整单文件 GUI 补丁与汉化程序（推荐生产使用，零 Dropper 报毒风险）。
+- `Patch_Loader.exe`：资源区加密 Payload 模块化加载器。
 - `dup2patcher.dll`：64 位核心补丁动态链接库。
 
 ---

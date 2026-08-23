@@ -1,0 +1,69 @@
+{
+  "jsonVersion": "1.0.0",
+  "version": "1",
+  "minAppVersion": "0",
+  "shortName": "daclip",
+  "name": "DACLIP Embeddings",
+  "category": "视觉特征嵌入",
+  "verb": "正在生成特征嵌入向量...",
+  "enabled": 1,
+  "normalization": {
+    "resize": [
+      224,
+      224
+    ],
+    "interpolation": "bicubic",
+    "mean": [
+      0.48145466,
+      0.4578275,
+      0.40821073
+    ],
+    "std": [
+      0.26862954,
+      0.26130258,
+      0.27577711
+    ]
+  },
+  "inputs": {
+    "input0": "image"
+  },
+  "backends": {
+    "openvino": {
+      "model": "img2vec",
+      "parallel": 0,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-1x-ov.tz"
+          ],
+          "blocks": [
+            224,
+            224
+          ],
+          "outputs": [
+            "img_vecs"
+          ]
+        }
+      }
+    },
+    "coreml": {
+      "model": "img2vec",
+      "parallel": 0,
+      "minMacVersion": 10.16,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-1x-mlc.tz"
+          ],
+          "blocks": [
+            224,
+            224
+          ],
+          "outputs": [
+            "img_vecs"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,144 @@
+{
+  "jsonVersion": "1.0.0",
+  "version": "1",
+  "minAppVersion": "0",
+  "shortName": "trfn",
+  "blockOverlap": 12,
+  "blockDiscard": 2,
+  "enabled": 1,
+  "name": "Text Refine Noisy",
+  "category": "文本与字符修复",
+  "verb": "正在保护与修复文字细节...",
+  "gui": {
+    "minScale": 1,
+    "maxScale": 1,
+    "showScale": 0,
+    "name": "Text Refine Noisy",
+    "displayPri": 1.0,
+    "desc": "Text Refine Noisy model",
+    "parameters": {
+      "scale": {
+        "default": 1
+      },
+      "param1": {
+        "name": "降噪强度",
+        "guiType": "int",
+        "default": 0,
+        "guiMax": 100,
+        "guiMin": 0,
+        "description": "Reduce blockiness and other compression artifacts. Higher values are better for low-bitrate input video.",
+        "precision": 1,
+        "modelMax": 1,
+        "modelMin": 0,
+        "modelType": "float"
+      },
+      "param2": {
+        "name": "锐化强度",
+        "guiType": "int",
+        "default": 0,
+        "guiMax": 100,
+        "guiMin": 0,
+        "description": "Additional sharpening of the video. Higher values produce a sharper video but may introduce artifacts. Adjust this after the \"Deblock\" setting.",
+        "precision": 1,
+        "modelMax": 1,
+        "modelMin": 0,
+        "modelType": "float"
+      }
+    }
+  },
+  "inputs": {
+    "param1": "pn",
+    "param2": "pb",
+    "input": "netInput",
+    "cinput": "infer_input",
+    "output": "infer_output"
+  },
+  "backends": {
+    "openvino": {
+      "model": "imcc",
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-[S]x-ov.tz2",
+            "clc-v2-fp32-[H]x[W]-ov.tz2"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "netOutput",
+            "Identity"
+          ]
+        }
+      }
+    },
+    "onnx16": {
+      "model": "imcc",
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-[S]x-ox.tz2",
+            "clc-v3-fp16-[H]x[W]-ox.tz2"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "netOutput",
+            "Identity"
+          ]
+        }
+      }
+    },
+    "coreml": {
+      "model": "imcc",
+      "parallel": 1,
+      "minMacVersion": 10.16,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-[S]x-mlc.tz",
+            "clc-v3-fp16-[H]x[W]-mlc.tz"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "netOutput",
+            "Identity"
+          ]
+        }
+      }
+    },
+    "tensorrt_disabled": {
+      "model": "imcc",
+      "capabilities": [
+        705,
+        806,
+        809
+      ],
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp32-[H]x[W]-[S]x-rt[C]-[R]-rt.tz2",
+            "clc-v3-fp32-[H]x[W]-rt[C]-[R]-rt.tz2"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "netOutput",
+            "Identity"
+          ]
+        }
+      }
+    }
+  }
+}

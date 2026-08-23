@@ -1,0 +1,55 @@
+{
+  "jsonVersion": "1.0.0",
+  "version": "1",
+  "minAppVersion": "0",
+  "shortName": "lmx",
+  "name": "Recover details",
+  "category": "AI 降噪",
+  "enabled": 1,
+  "display": 0,
+  "usefulRegion": 1.0,
+  "zeroCenter": 3,
+  "inputs": {
+    "input0": "source_image",
+    "input1": "target_image",
+    "recover_detail": "alpha"
+  },
+  "backends": {
+    "openvino": {
+      "model": "imn",
+      "parallel": 1,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-ov.tz2"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "output_image"
+          ]
+        }
+      }
+    },
+    "coreml": {
+      "model": "imn",
+      "parallel": 0,
+      "scales": {
+        "1": {
+          "nets": [
+            "[N]-v[V]-fp16-[H]x[W]-mlc.tz"
+          ],
+          "blocks": [
+            512,
+            512
+          ],
+          "outputs": [
+            "output_image"
+          ]
+        }
+      }
+    }
+  }
+}
