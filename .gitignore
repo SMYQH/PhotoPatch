@@ -1,2 +1,7 @@
 *.msi
 *.exe
+dup2patcher.dll
+__pycache__/
+*.pyc
+*.bak
+*.o
