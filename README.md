@@ -19,8 +19,8 @@
 ## 🚀 快速使用
 
 1. 安装 **Photo.msi**，安装完成后彻底退出软件。
-2. 将构建生成的 `Use.exe` 复制到软件安装根目录下（默认路径为：`C:\Program Files\Topaz Labs LLC\Topaz Photo AI`）。
-3. 右键选择 **以管理员身份运行** `Use.exe`。
+2. 将构建生成的 `Photo Patch.exe` 复制到软件安装根目录下（默认路径为：`C:\Program Files\Topaz Labs LLC\Topaz Photo AI`）。
+3. 右键选择 **以管理员身份运行** `Photo Patch.exe`。
 4. 点击 **应用补丁** 按钮（程序会自动创建 `network.dll.bak` 备份并应用 12 组增强规则）。
 5. 看到日志提示修补成功后即可退出工具。
 6. 打开 Topaz Photo AI 即可正常离线使用。如需回退，可点击 **还原备份** 恢复原版文件。
@@ -58,7 +58,7 @@ chmod +x build.sh
 ```
 
 构建产物：
-- `Use.exe`：独立完整单文件 GUI 补丁程序（推荐生产使用，无 Dropper 报毒风险）。
+- `Photo Patch.exe`：独立完整单文件 GUI 补丁程序（推荐生产使用，无 Dropper 报毒风险）。
 - `Use_Loader.exe`：资源区加密 Payload 模块化加载器。
 - `dup2patcher.dll`：64 位核心补丁动态链接库。
 
