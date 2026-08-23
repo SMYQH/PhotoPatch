@@ -1,3 +1,2 @@
 500 ICON "app.ico"
 1 24 "app.manifest"
-10 DLL "encrypted_payload.bin"
