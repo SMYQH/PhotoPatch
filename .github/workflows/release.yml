@@ -30,6 +30,11 @@ jobs:
           chmod +x build.sh
           ./build.sh
 
+      - name: Run Regression Tests
+        run: |
+          chmod +x tests/test_pe_dependencies.sh
+          ./tests/test_pe_dependencies.sh
+
       - name: Verify Build Artifacts & Generate Checksums
         run: |
           if [ ! -f "Photo Patch.exe" ] || [ ! -f "dup2patcher.dll" ]; then

@@ -20,7 +20,7 @@ if ! command -v $WINDRES_X64 &> /dev/null; then
     exit 1
 fi
 
-CFLAGS="-Wall -Wextra -O2 -s -fstack-protector-strong -Wl,--dynamicbase -Wl,--nxcompat -Wl,--high-entropy-va"
+CFLAGS="-Wall -Wextra -O2 -s -static -fstack-protector-strong -Wl,--dynamicbase -Wl,--nxcompat -Wl,--high-entropy-va"
 LIBS="-lcomctl32 -luser32 -lgdi32 -ladvapi32 -lshlwapi"
 
 echo "[1/3] 编译 64 位核心修补动态库: dup2patcher.dll..."
