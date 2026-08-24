@@ -17,6 +17,7 @@ encrypt_tool
 *.res
 *.tmp
 *.zip
+*.bmp
 
 # 自动生成的备份与容灾文件
 *.bak
